@@ -1,0 +1,8 @@
+<nav class="breadcrumb" aria-label="breadcrumbs">
+  <ul>
+    {{range .item.path}}
+    <li><a href="/{{.id}}">{{.name}}</a></li>
+    {{end}}
+    <li class="is-active"><a href="#" aria-current="page">{{.item.name}}</a></li>
+  </ul>
+</nav>

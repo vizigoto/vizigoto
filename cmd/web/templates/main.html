@@ -1,0 +1,37 @@
+<table class="table is-striped is-narrow is-fullwidth">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Autor</th>
+      <th>Data</th>
+      <th>Acoes</th>
+    </tr>
+  </thead>
+  {{range .item.children}}
+  <tr>
+    <td>
+      {{if .is_folder}}
+        <span class="icon"><i class="fa fa-folder-o" aria-hidden="true"></i></span>
+        <a href="/{{.id}}">{{.name}}</a>
+      {{end}}
+
+      {{if.is_report}}
+        <span class="icon"><i class="fa fa-file-o" aria-hidden="true"></i></span>
+        <a href="/report/{{.id}}">{{.name}}</a>
+      {{end}}
+    </td>
+    <td>Tarcisio</td>
+    <td>2 dias</td>
+    <td>
+      {{if .is_folder}}
+        <a href="/{{.id}}/properties/"><span class="icon"><i class="fa fa-cog" aria-hidden="true"></i></span></a>
+      {{end}}
+      {{if.is_report}}
+        <a href="/report/{{.id}}" target="_blank"><span class="icon"><i class="fa fa-play" aria-hidden="true"></i></span></a>
+        <a href="/{{.id}}/code/"><span class="icon"><i class="fa fa-code" aria-hidden="true"></i></span></a>
+        <a href="/{{.id}}/edit/"><span class="icon"><i class="fa fa-pencil" aria-hidden="true"></i></span></a>
+      {{end}}
+    </td>
+  </tr>
+  {{end}}
+</table>
