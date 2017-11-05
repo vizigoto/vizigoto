@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/vizigoto/vizigoto/pkg/node"
+	"github.com/vizigoto/vizigoto/pkg/uuid"
 )
 
 type repository struct {
@@ -40,8 +41,8 @@ func (repo *repository) Get(id node.ID) (*node.Node, error) {
 }
 
 func (repo *repository) Put(n *node.Node) (node.ID, error) {
-	id := node.NewID()
-	n.ID = id
+	id := uuid.New()
+	n.ID = node.ID(id)
 	if n.Parent == node.EmptyID {
 		return repo.putRoot(n)
 	}

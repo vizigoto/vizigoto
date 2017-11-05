@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/vizigoto/vizigoto/pkg/node"
+	"github.com/vizigoto/vizigoto/pkg/uuid"
 )
 
 type repository struct {
@@ -29,10 +30,10 @@ func (repo *repository) Get(id node.ID) (*node.Node, error) {
 func (repo *repository) Put(i *node.Node) (node.ID, error) {
 	repo.mtx.Lock()
 	defer repo.mtx.Unlock()
-	id := node.NewID()
-	i.ID = id
-	repo.nodes[id] = i
-	return id, nil
+	id := uuid.New()
+	i.ID = node.ID(id)
+	repo.nodes[i.ID] = i
+	return i.ID, nil
 }
 
 func (repo *repository) assembleItem(i *node.Node) {

@@ -2,7 +2,6 @@ package node
 
 import (
 	"github.com/vizigoto/vizigoto/pkg/user"
-	"github.com/vizigoto/vizigoto/pkg/uuid"
 )
 
 type ID string
@@ -23,11 +22,6 @@ type Node struct {
 }
 
 var EmptyID = ID("")
-
-func NewID() ID {
-	id := uuid.New()
-	return ID(id)
-}
 
 func NewNode(name string, kind Kind, parent ID, owner user.ID) *Node {
 	return &Node{

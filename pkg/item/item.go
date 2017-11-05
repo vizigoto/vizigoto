@@ -46,26 +46,15 @@ type Service interface {
 }
 
 type service struct {
-	repo  Repository
-	nodes node.Service
+	repo Repository
 }
 
 func NewService(repo Repository, nodes node.Service) Service {
-	return &service{repo, nodes}
+	return &service{repo}
 }
 
 func (s *service) Get(id ID) (interface{}, error) {
-	nodeID := node.ID(id)
-	n, err := s.nodes.Get(nodeID)
-	if err != nil {
-		return nil, err
-	}
-
-	if n.Kind == node.KindFolder {
-		return s.repo.Get(id)
-	}
-
-	panic("kind not identified")
+	return s.repo.Get(id)
 }
 
 func (s *service) AddFolder(name string, parent ID, owner user.ID) (ID, error) {
