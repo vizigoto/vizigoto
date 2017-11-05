@@ -37,31 +37,3 @@ type Repository interface {
 	Get(id ID) (*Node, error)
 	Put(*Node) (ID, error)
 }
-
-type Service interface {
-	Get(id ID) (*Node, error)
-	Add(name string, kind Kind, parent ID, owner user.ID) (ID, error)
-}
-
-type service struct {
-	repo   Repository
-	rootID ID
-}
-
-func NewService(id ID, repo Repository) Service {
-	return &service{repo, id}
-}
-
-func (s *service) Get(id ID) (*Node, error) {
-	return s.repo.Get(id)
-}
-
-func (s *service) Add(name string, kind Kind, parent ID, owner user.ID) (ID, error) {
-	i := NewNode(name, kind, parent, owner)
-
-	id, err := s.repo.Put(i)
-	if err != nil {
-		return "", err
-	}
-	return id, nil
-}

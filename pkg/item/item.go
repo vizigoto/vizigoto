@@ -1,7 +1,6 @@
 package item
 
 import (
-	"github.com/vizigoto/vizigoto/pkg/node"
 	"github.com/vizigoto/vizigoto/pkg/user"
 )
 
@@ -49,7 +48,7 @@ type service struct {
 	repo Repository
 }
 
-func NewService(repo Repository, nodes node.Service) Service {
+func NewService(repo Repository) Service {
 	return &service{repo}
 }
 
