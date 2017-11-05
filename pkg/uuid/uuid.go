@@ -1,3 +1,5 @@
+// Package uuid provides implementation of Universally Unique Identifier (UUID).
+// This package only supports the type 4 (as specified in RFC 4122).
 package uuid
 
 import (
