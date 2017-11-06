@@ -11,6 +11,7 @@ import (
 // ID uniquely identifies a particular item.
 type ID string
 
+// Folder represents a folder in the content tree.
 type Folder struct {
 	ID       ID
 	Name     string
@@ -20,10 +21,12 @@ type Folder struct {
 	Children []ID
 }
 
+// NewFolder allocates a folder and returns a pointer to it.
 func NewFolder(name string, parent ID, owner user.ID) *Folder {
 	return &Folder{Name: name, Parent: parent, Owner: owner, Children: []ID{}}
 }
 
+// Report represents a report in the content tree.
 type Report struct {
 	ID      ID
 	Name    string
@@ -32,10 +35,12 @@ type Report struct {
 	Content string
 }
 
+// NewReport allocates a report and returns a pointer to it.
 func NewReport(name string, parent ID, owner user.ID, content string) *Report {
 	return &Report{Name: name, Parent: parent, Owner: owner, Content: content}
 }
 
+// Repository provides a limited interface to a storage layer.
 type Repository interface {
 	Get(ID) (interface{}, error)
 	Put(interface{}) (ID, error)
