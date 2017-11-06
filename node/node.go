@@ -8,7 +8,9 @@ import (
 	"github.com/vizigoto/vizigoto/user"
 )
 
+// ID uniquely identifies a particular node.
 type ID string
+
 type Kind string
 
 const (

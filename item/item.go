@@ -8,9 +8,8 @@ import (
 	"github.com/vizigoto/vizigoto/user"
 )
 
+// ID uniquely identifies a particular item.
 type ID string
-
-var EmptyID = ID("")
 
 type Folder struct {
 	ID       ID

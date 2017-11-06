@@ -4,4 +4,5 @@
 
 package user
 
+// ID uniquely identifies a particular user.
 type ID string
