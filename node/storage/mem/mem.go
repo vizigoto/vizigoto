@@ -17,6 +17,8 @@ type repository struct {
 	nodes map[node.ID]*node.Node
 }
 
+// NewRepository returns an instance of a node repository using an in-memory storage engine.
+// All data will be lost after instance release. Useful for testing purposes.
 func NewRepository() node.Repository {
 	return &repository{nodes: make(map[node.ID]*node.Node)}
 }
