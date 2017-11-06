@@ -5,39 +5,16 @@
 package postgres_test
 
 import (
-	"database/sql"
-	"fmt"
-	"os"
 	"testing"
 
 	_ "github.com/lib/pq"
 	"github.com/vizigoto/vizigoto/node"
 	"github.com/vizigoto/vizigoto/node/storage/postgres"
+	"github.com/vizigoto/vizigoto/pkg/testutil"
 )
 
-func getDB() (*sql.DB, error) {
-	hostname := os.Getenv("PGHOSTNAME")
-	database := os.Getenv("PGDATABASE")
-	username := os.Getenv("PGUSERNAME")
-	password := os.Getenv("PGPASSWORD")
-
-	conInfo := fmt.Sprintf("host=%s dbname=%s user=%s password=%s",
-		hostname, database, username, password)
-
-	db, err := sql.Open("postgres", conInfo)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = db.Exec("truncate vinodes.nodes")
-	if err != nil {
-		return nil, err
-	}
-	return db, nil
-}
-
 func TestPutRoot(t *testing.T) {
-	db, err := getDB()
+	db, err := testutil.GetDB()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -72,7 +49,7 @@ func TestPutRoot(t *testing.T) {
 }
 
 func TestPutFirstChild(t *testing.T) {
-	db, err := getDB()
+	db, err := testutil.GetDB()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -118,7 +95,7 @@ func TestPutFirstChild(t *testing.T) {
 }
 
 func TestPutSecondChild(t *testing.T) {
-	db, err := getDB()
+	db, err := testutil.GetDB()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -175,7 +152,7 @@ func TestPutSecondChild(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	db, err := getDB()
+	db, err := testutil.GetDB()
 	if err != nil {
 		t.Fatal(err)
 	}

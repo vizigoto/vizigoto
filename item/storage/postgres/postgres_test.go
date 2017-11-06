@@ -5,42 +5,17 @@
 package postgres_test
 
 import (
-	"database/sql"
-	"fmt"
-	"os"
 	"testing"
 
 	_ "github.com/lib/pq"
 	"github.com/vizigoto/vizigoto/item"
 	"github.com/vizigoto/vizigoto/item/storage/postgres"
 	node "github.com/vizigoto/vizigoto/node/storage/postgres"
+	"github.com/vizigoto/vizigoto/pkg/testutil"
 )
 
-func getDB() (*sql.DB, error) {
-	hostname := os.Getenv("PGHOSTNAME")
-	database := os.Getenv("PGDATABASE")
-	username := os.Getenv("PGUSERNAME")
-	password := os.Getenv("PGPASSWORD")
-
-	conInfo := fmt.Sprintf("host=%s dbname=%s user=%s password=%s",
-		hostname, database, username, password)
-
-	db, err := sql.Open("postgres", conInfo)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = db.Exec("truncate vinodes.nodes")
-	_, err = db.Exec("truncate viitems.folders")
-	_, err = db.Exec("truncate viitems.reports")
-	if err != nil {
-		return nil, err
-	}
-	return db, nil
-}
-
 func TestPutGetFolder(t *testing.T) {
-	db, err := getDB()
+	db, err := testutil.GetDB()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -73,7 +48,7 @@ func TestPutGetFolder(t *testing.T) {
 }
 
 func TestPutGetReport(t *testing.T) {
-	db, err := getDB()
+	db, err := testutil.GetDB()
 	if err != nil {
 		t.Fatal(err)
 	}

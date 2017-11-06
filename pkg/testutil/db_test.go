@@ -10,6 +10,7 @@ import (
 func TestDB(t *testing.T) {
 	param := testutil.GetParams()
 
+	os.Setenv("SEMAPHORE", "")
 	if param.String() != "host=localhost dbname=vizi user=vizi password=vizi" {
 		t.Fatal("local param db error")
 	}
@@ -21,6 +22,6 @@ func TestDB(t *testing.T) {
 	param = testutil.GetParams()
 
 	if param.String() != "host=localhost dbname=vizigoto user=semaphore password=semaphore" {
-		t.Fatal("local param db error")
+		t.Fatal("semaphore param db error")
 	}
 }
