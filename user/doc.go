@@ -2,5 +2,5 @@
 // Use of this source code is governed by a BSD 3-Clause License
 // license that can be found in the LICENSE file.
 
-// Package user ...
+// Package user provides means to manage the users.
 package user

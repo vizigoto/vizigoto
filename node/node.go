@@ -11,13 +11,16 @@ import (
 // ID uniquely identifies a particular node.
 type ID string
 
+// Kind of node
 type Kind string
 
+// Kinds of nodes
 const (
-	KindFolder Kind = "folder"
-	KindReport Kind = "report"
+	Folder Kind = "folder"
+	Report Kind = "report"
 )
 
+// Node represents one single node in the content tree.
 type Node struct {
 	ID       ID
 	Name     string
@@ -27,8 +30,7 @@ type Node struct {
 	Children []ID
 }
 
-var EmptyID = ID("")
-
+// NewNode allocates a node and returns a pointer to it.
 func NewNode(name string, kind Kind, parent ID, owner user.ID) *Node {
 	return &Node{
 		Name:     name,
@@ -39,7 +41,8 @@ func NewNode(name string, kind Kind, parent ID, owner user.ID) *Node {
 	}
 }
 
+// Repository provides a limited interface to a storage layer.
 type Repository interface {
-	Get(id ID) (*Node, error)
+	Get(ID) (*Node, error)
 	Put(*Node) (ID, error)
 }
