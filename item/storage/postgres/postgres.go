@@ -27,11 +27,11 @@ func (repo *repository) Get(id item.ID) (interface{}, error) {
 		return nil, err
 	}
 
-	if n.Kind == node.KindFolder {
+	if n.Kind == node.Folder {
 		return repo.getFolder(n)
 	}
 
-	if n.Kind == node.KindReport {
+	if n.Kind == node.Report {
 		return repo.getReport(n)
 	}
 
@@ -79,7 +79,7 @@ func (repo *repository) Put(i interface{}) (item.ID, error) {
 }
 
 func (repo *repository) putFolder(folder *item.Folder) (item.ID, error) {
-	n := node.NewNode(folder.Name, node.KindFolder, node.ID(folder.Parent), folder.Owner)
+	n := node.New(folder.Name, node.Folder, node.ID(folder.Parent), folder.Owner)
 	nodeID, err := repo.nodes.Put(n)
 	if err != nil {
 		return "", err
@@ -93,7 +93,7 @@ func (repo *repository) putFolder(folder *item.Folder) (item.ID, error) {
 }
 
 func (repo *repository) putReport(report *item.Report) (item.ID, error) {
-	n := node.NewNode(report.Name, node.KindReport, node.ID(report.Parent), report.Owner)
+	n := node.New(report.Name, node.Report, node.ID(report.Parent), report.Owner)
 	nodeID, err := repo.nodes.Put(n)
 	if err != nil {
 		return "", err

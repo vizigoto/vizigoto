@@ -13,7 +13,7 @@ import (
 
 func TestPutGet(t *testing.T) {
 	var repo node.Repository = mem.NewRepository()
-	root := node.NewNode("Home", node.KindFolder, node.ID(""), "x")
+	root := node.New("Home", node.Folder, node.ID(""), "x")
 	rootID, err := repo.Put(root)
 	if err != nil {
 		t.Fatal(err)
@@ -36,7 +36,7 @@ func TestPutGet(t *testing.T) {
 	children := []string{"a", "b", "c", "d"}
 	childrenIDs := []node.ID{}
 	for _, c := range children {
-		id, err := repo.Put(node.NewNode(c, node.KindFolder, rootID, "x"))
+		id, err := repo.Put(node.New(c, node.Folder, rootID, "x"))
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -44,7 +44,7 @@ func TestPutRoot(t *testing.T) {
 
 	repo := postgres.NewRepository(db)
 
-	n := node.NewNode("Home", node.KindFolder, node.EmptyID, "x")
+	n := node.New("Home", node.Folder, "", "x")
 
 	id, err := repo.Put(n)
 	if err != nil {
@@ -79,7 +79,7 @@ func TestPutFirstChild(t *testing.T) {
 
 	repo := postgres.NewRepository(db)
 
-	rootNode := node.NewNode("Home", node.KindFolder, node.EmptyID, "x")
+	rootNode := node.New("Home", node.Folder, "", "x")
 
 	id, err := repo.Put(rootNode)
 	if err != nil {
@@ -90,7 +90,7 @@ func TestPutFirstChild(t *testing.T) {
 		t.Fatal("id not returned")
 	}
 
-	childNode := node.NewNode("IT", node.KindFolder, rootNode.ID, "x")
+	childNode := node.New("IT", node.Folder, rootNode.ID, "x")
 
 	id, err = repo.Put(childNode)
 	if err != nil {
@@ -125,7 +125,7 @@ func TestPutSecondChild(t *testing.T) {
 
 	repo := postgres.NewRepository(db)
 
-	rootNode := node.NewNode("Home", node.KindFolder, node.EmptyID, "x")
+	rootNode := node.New("Home", node.Folder, "", "x")
 
 	id, err := repo.Put(rootNode)
 	if err != nil {
@@ -136,7 +136,7 @@ func TestPutSecondChild(t *testing.T) {
 		t.Fatal("id not returned")
 	}
 
-	firstChildNode := node.NewNode("IT", node.KindFolder, rootNode.ID, "x")
+	firstChildNode := node.New("IT", node.Folder, rootNode.ID, "x")
 
 	id, err = repo.Put(firstChildNode)
 	if err != nil {
@@ -147,7 +147,7 @@ func TestPutSecondChild(t *testing.T) {
 		t.Fatal("id not returned")
 	}
 
-	secondChildNode := node.NewNode("HR", node.KindFolder, rootNode.ID, "x")
+	secondChildNode := node.New("HR", node.Folder, rootNode.ID, "x")
 
 	id, err = repo.Put(secondChildNode)
 	if err != nil {
@@ -182,7 +182,7 @@ func TestGet(t *testing.T) {
 
 	repo := postgres.NewRepository(db)
 
-	rootNode := node.NewNode("Home", node.KindFolder, node.EmptyID, "x")
+	rootNode := node.New("Home", node.Folder, "", "x")
 
 	id, err := repo.Put(rootNode)
 	if err != nil {
@@ -193,7 +193,7 @@ func TestGet(t *testing.T) {
 		t.Fatal("id not returned")
 	}
 
-	firstChildNode := node.NewNode("IT", node.KindFolder, rootNode.ID, "x")
+	firstChildNode := node.New("IT", node.Folder, rootNode.ID, "x")
 
 	id, err = repo.Put(firstChildNode)
 	if err != nil {

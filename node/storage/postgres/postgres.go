@@ -34,11 +34,11 @@ func (repo *repository) Get(id node.ID) (*node.Node, error) {
 	}
 
 	if kind == "folder" {
-		n.Kind = node.KindFolder
+		n.Kind = node.Folder
 	}
 
 	if kind == "report" {
-		n.Kind = node.KindReport
+		n.Kind = node.Report
 	}
 
 	return n, nil
@@ -47,7 +47,7 @@ func (repo *repository) Get(id node.ID) (*node.Node, error) {
 func (repo *repository) Put(n *node.Node) (node.ID, error) {
 	id := uuid.New()
 	n.ID = node.ID(id)
-	if n.Parent == node.EmptyID {
+	if n.Parent == "" {
 		return repo.putRoot(n)
 	}
 	return repo.putChild(n)

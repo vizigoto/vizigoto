@@ -30,8 +30,8 @@ type Node struct {
 	Children []ID
 }
 
-// NewNode allocates a node and returns a pointer to it.
-func NewNode(name string, kind Kind, parent ID, owner user.ID) *Node {
+// New allocates a node and returns a pointer to it.
+func New(name string, kind Kind, parent ID, owner user.ID) *Node {
 	return &Node{
 		Name:     name,
 		Kind:     kind,

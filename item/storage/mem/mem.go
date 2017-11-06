@@ -40,7 +40,7 @@ func (repo *repository) Put(i interface{}) (item.ID, error) {
 	folder, ok := i.(*item.Folder)
 
 	if ok {
-		n := node.NewNode(folder.Name, node.KindFolder, node.ID(folder.Parent), folder.Owner)
+		n := node.New(folder.Name, node.Folder, node.ID(folder.Parent), folder.Owner)
 		id, err := repo.nodes.Put(n)
 		if err != nil {
 			return "", err
