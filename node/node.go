@@ -5,7 +5,7 @@
 package node
 
 import (
-	"github.com/vizigoto/vizigoto/pkg/user"
+	"github.com/vizigoto/vizigoto/user"
 )
 
 type ID string

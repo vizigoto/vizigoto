@@ -8,7 +8,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/vizigoto/vizigoto/pkg/node"
+	"github.com/vizigoto/vizigoto/node"
 	"github.com/vizigoto/vizigoto/pkg/uuid"
 )
 

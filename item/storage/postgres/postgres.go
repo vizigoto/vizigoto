@@ -8,8 +8,8 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/vizigoto/vizigoto/pkg/item"
-	"github.com/vizigoto/vizigoto/pkg/node"
+	"github.com/vizigoto/vizigoto/item"
+	"github.com/vizigoto/vizigoto/node"
 )
 
 type repository struct {

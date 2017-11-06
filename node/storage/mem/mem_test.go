@@ -7,8 +7,8 @@ package mem_test
 import (
 	"testing"
 
-	"github.com/vizigoto/vizigoto/pkg/node"
-	"github.com/vizigoto/vizigoto/pkg/node/storage/mem"
+	"github.com/vizigoto/vizigoto/node"
+	"github.com/vizigoto/vizigoto/node/storage/mem"
 )
 
 func TestPutGet(t *testing.T) {

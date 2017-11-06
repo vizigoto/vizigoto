@@ -11,9 +11,9 @@ import (
 	"testing"
 
 	_ "github.com/lib/pq"
-	"github.com/vizigoto/vizigoto/pkg/item"
-	"github.com/vizigoto/vizigoto/pkg/item/storage/postgres"
-	node "github.com/vizigoto/vizigoto/pkg/node/storage/postgres"
+	"github.com/vizigoto/vizigoto/item"
+	"github.com/vizigoto/vizigoto/item/storage/postgres"
+	node "github.com/vizigoto/vizigoto/node/storage/postgres"
 )
 
 func getDB() (*sql.DB, error) {
