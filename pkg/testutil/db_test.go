@@ -8,24 +8,10 @@ import (
 )
 
 func TestDB(t *testing.T) {
-	param := testutil.GetParams()
-
-	os.Setenv("SEMAPHORE", "")
-	os.Setenv("PGHOSTNAME", "localhost")
-	os.Setenv("PGDATABASE", "vizi")
-	os.Setenv("PGUSERNAME", "vizi")
-	os.Setenv("PGPASSWORD", "vizi")
-
-	if param.String() != "host=localhost dbname=vizi user=vizi password=vizi" {
-		t.Fatal("local param db error")
-	}
-
 	os.Setenv("SEMAPHORE", "true")
 	os.Setenv("DATABASE_POSTGRESQL_USERNAME", "semaphore")
 	os.Setenv("DATABASE_POSTGRESQL_PASSWORD", "semaphore")
-
-	param = testutil.GetParams()
-
+	param := testutil.GetParams()
 	if param.String() != "host=localhost dbname=vizigoto user=semaphore password=semaphore" {
 		t.Fatal("semaphore param db error")
 	}
