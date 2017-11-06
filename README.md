@@ -5,7 +5,7 @@
 [GoDoc]: https://godoc.org/github.com/vizigoto/vizigoto
 [Semaphore]: https://semaphoreci.com/tarcisio/vizigoto
 [GoReport]: https://goreportcard.com/report/github.com/vizigoto/vizigoto
-[CodeCov]: https://codecov.io/gh/vizigoto/vizigoto/
+[CodeCov]: https://codecov.io/gh/vizigoto/vizigoto
 [Travis]: https://travis-ci.org/vizigoto/vizigoto
 [License]:https://raw.githubusercontent.com/vizigoto/vizigoto/master/LICENSE
 [GoDoc Widget]: http://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square
