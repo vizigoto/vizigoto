@@ -20,6 +20,7 @@ func (p dbParams) String() string {
 		p.hostname, p.database, p.username, p.password)
 }
 
+// GetDB opens a database connection for testing purposes only. 
 func GetDB() (*sql.DB, error) {
 	params := GetParams()
 	conInfo := fmt.Sprintf("%s", params)
