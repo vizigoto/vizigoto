@@ -51,6 +51,9 @@ func GetParams() dbParams {
 	if len(os.Getenv("SEMAPHORE")) > 0 {
 		return getSemaphoreParams()
 	}
+	if len(os.Getenv("TRAVIS")) > 0 {
+		return getTravisParams()
+	}
 	return getLocalParams()
 }
 
@@ -59,6 +62,14 @@ func getSemaphoreParams() dbParams {
 	database := "vizigoto"
 	username := os.Getenv("DATABASE_POSTGRESQL_USERNAME")
 	password := os.Getenv("DATABASE_POSTGRESQL_PASSWORD")
+	return dbParams{hostname, database, username, password}
+}
+
+func getTravisParams() dbParams {
+	hostname := "localhost"
+	database := "travis_ci_test"
+	username := "postgres"
+	password := ""
 	return dbParams{hostname, database, username, password}
 }
 

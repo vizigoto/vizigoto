@@ -1,0 +1,9 @@
+language: go
+services:
+  - postgresql
+before_script:
+ - psql -d travis_ci_test -a -f etc/sql/nodes.sql -P pager
+ - psql -d travis_ci_test -a -f etc/sql/items.sql -P pager
+script:
+  - go build -v ./...
+  - go test -v -race ./...

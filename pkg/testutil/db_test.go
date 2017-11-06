@@ -15,4 +15,11 @@ func TestDB(t *testing.T) {
 	if param.String() != "host=localhost dbname=vizigoto user=semaphore password=semaphore" {
 		t.Fatal("semaphore param db error")
 	}
+
+	os.Setenv("SEMAPHORE", "")
+	os.Setenv("TRAVIS", "true")
+	param = testutil.GetParams()
+	if param.String() != "host=localhost dbname=travis_ci_test user=postgres password=" {
+		t.Fatal("travis param db error")
+	}
 }
