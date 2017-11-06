@@ -11,6 +11,11 @@ func TestDB(t *testing.T) {
 	param := testutil.GetParams()
 
 	os.Setenv("SEMAPHORE", "")
+	os.Setenv("PGHOSTNAME", "localhost")
+	os.Setenv("PGDATABASE", "vizi")
+	os.Setenv("PGUSERNAME", "vizi")
+	os.Setenv("PGPASSWORD", "vizi")
+
 	if param.String() != "host=localhost dbname=vizi user=vizi password=vizi" {
 		t.Fatal("local param db error")
 	}
