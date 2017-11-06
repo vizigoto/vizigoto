@@ -1,12 +1,4 @@
-# vizigoto
-[![GoDoc Widget]][GoDoc]
-[![Semaphore Widget]][Semaphore]
-[![Travis Widget]][Travis]
-[![GoReport Widget]][GoReport]
-[![License Widget]][License]
-
-)](http://godoc.org/github.com/labstack
-
+# vizigoto [![GoDoc Widget]][GoDoc] [![Semaphore Widget]][Semaphore] [![Travis Widget]][Travis] [![GoReport Widget]][GoReport] [![License Widget]][License]
 
 ![vizigoto project logo](etc/img/project-logo.png "The vizigoto Project")
 
@@ -19,4 +11,4 @@
 [Travis]: https://travis-ci.org/vizigoto/vizigoto
 [Travis Widget]: https://travis-ci.org/vizigoto/vizigoto.svg?branch=master
 [License]:https://raw.githubusercontent.com/vizigoto/vizigoto/master/LICENSE
-[License Widget]:https://img.shields.io/badge/license-bsd--3-blue.svg?style=flat-square
+[License Widget]:https://img.shields.io/badge/license-bsd--3-ff69b4.svg?style=flat-square
