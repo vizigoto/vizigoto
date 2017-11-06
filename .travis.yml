@@ -1,6 +1,7 @@
 language: go
 services:
   - postgresql
+install: echo
 before_script:
  - psql -c 'create database travis_ci_test;' -U postgres
  - psql -d travis_ci_test -a -f etc/sql/nodes.sql -P pager
