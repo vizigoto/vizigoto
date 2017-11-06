@@ -15,9 +15,4 @@ create schema vinodes
       protected boolean not null default 'false'
   );
 
-alter table vinodes.nodes OWNER TO vizi;
-alter schema vinodes OWNER TO vizi;
-
 commit;
-
-insert into vinodes.nodes(id, parent_id, name, kind, owner_id, protected) values ('a', null, "x", "folder", "xx", 't')

@@ -10,8 +10,4 @@ create schema viitems
       content   varchar not null default ''
   );
 
-alter table viitems.folders OWNER TO vizi;
-alter table viitems.reports OWNER TO vizi;
-alter schema viitems OWNER TO vizi;
-
 commit;
