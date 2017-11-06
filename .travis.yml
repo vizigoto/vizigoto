@@ -8,4 +8,6 @@ before_script:
  - psql -d travis_ci_test -a -f etc/sql/items.sql -P pager
 script:
   - go build -v ./...
-  - go test -v -race ./...
+  - tests.sh
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
