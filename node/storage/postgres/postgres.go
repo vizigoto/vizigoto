@@ -15,6 +15,7 @@ type repository struct {
 	db *sql.DB
 }
 
+// NewRepository returns an instance of a node repository.
 func NewRepository(db *sql.DB) node.Repository {
 	return &repository{db}
 }
