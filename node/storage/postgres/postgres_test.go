@@ -5,6 +5,7 @@
 package postgres_test
 
 import (
+	"database/sql"
 	"testing"
 
 	_ "github.com/lib/pq"
@@ -13,195 +14,174 @@ import (
 	"github.com/vizigoto/vizigoto/pkg/testutil"
 )
 
-func TestPutRoot(t *testing.T) {
-	db, err := testutil.GetDB()
-	if err != nil {
-		t.Fatal(err)
-	}
-
+func TestGetChild(t *testing.T) {
+	db := testutil.GetDB()
 	repo := postgres.NewRepository(db)
-
-	n := node.New("Home", node.Folder, "", "x")
-
-	id, err := repo.Put(n)
+	root := node.New(node.Folder, "")
+	rootID, err := repo.Put(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	childNode := node.New(node.Folder, rootID)
+	childID, err := repo.Put(childNode)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if id == "" {
-		t.Fatal("id not returned")
-	}
-
-	var dbNode node.Node
-
-	err = db.QueryRow("select id, name, kind, owner from vinodes.nodes where id = $1", id).Scan(&dbNode.ID, &dbNode.Name, &dbNode.Kind, &dbNode.Owner)
-
+	c, err := repo.Get(childID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if n.ID != dbNode.ID ||
-		n.Name != dbNode.Name ||
-		n.Kind != dbNode.Kind ||
-		n.Owner != dbNode.Owner {
-		t.Fatal("propertie error")
+	if c.ID != childID ||
+		c.Kind != childNode.Kind ||
+		c.Parent != childNode.Parent {
+		t.Fatal("child error")
+	}
+}
+
+func TestPutRoot(t *testing.T) {
+	db := testutil.GetDB()
+	repo := postgres.NewRepository(db)
+	root := node.New(node.Folder, "")
+	id, err := repo.Put(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var n node.Node
+	var p sql.NullString
+	var lft, rgt int
+	query := "select id, parent, lft, rgt, kind from vinodes.nodes where id = $1"
+	err = db.QueryRow(query, id).Scan(&n.ID, &p, &lft, &rgt, &n.Kind)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	if root.Kind != n.Kind {
+		t.Fatal("kind error")
+	}
+	if p.Valid {
+		t.Fatal("null expected")
+	}
+	if rgt-1-lft != 0 {
+		t.Fatal("lft or rgt error")
 	}
 }
 
 func TestPutFirstChild(t *testing.T) {
-	db, err := testutil.GetDB()
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	db := testutil.GetDB()
 	repo := postgres.NewRepository(db)
-
-	rootNode := node.New("Home", node.Folder, "", "x")
-
-	id, err := repo.Put(rootNode)
+	rootNode := node.New(node.Folder, "")
+	rootID, err := repo.Put(rootNode)
+	if err != nil {
+		t.Fatal(err)
+	}
+	childNode := node.New(node.Folder, rootID)
+	childID, err := repo.Put(childNode)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if id == "" {
-		t.Fatal("id not returned")
-	}
-
-	childNode := node.New("IT", node.Folder, rootNode.ID, "x")
-
-	id, err = repo.Put(childNode)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if id == "" {
-		t.Fatal("id not returned")
-	}
-
-	var dbNode node.Node
-
-	err = db.QueryRow("select id, name, kind, owner from vinodes.nodes where id = $1", id).Scan(&dbNode.ID, &dbNode.Name, &dbNode.Kind, &dbNode.Owner)
+	var n node.Node
+	var p sql.NullString
+	var lft, rgt int
+	query := "select id, parent, lft, rgt, kind from vinodes.nodes where id = $1"
+	err = db.QueryRow(query, childID).Scan(&n.ID, &p, &lft, &rgt, &n.Kind)
 
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if childNode.ID != dbNode.ID ||
-		childNode.Name != dbNode.Name ||
-		childNode.Kind != dbNode.Kind ||
-		childNode.Owner != dbNode.Owner {
-		t.Fatal("propertie error")
+	if childNode.Kind != n.Kind {
+		t.Fatal("kind error")
+	}
+	if !p.Valid {
+		t.Fatal("valid parent expected")
+	}
+	if rgt-1-lft != 0 {
+		t.Fatal("lft or rgt error")
 	}
 }
 
 func TestPutSecondChild(t *testing.T) {
-	db, err := testutil.GetDB()
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	db := testutil.GetDB()
 	repo := postgres.NewRepository(db)
-
-	rootNode := node.New("Home", node.Folder, "", "x")
-
-	id, err := repo.Put(rootNode)
+	rootNode := node.New(node.Folder, "")
+	rootID, err := repo.Put(rootNode)
+	if err != nil {
+		t.Fatal(err)
+	}
+	firstChildNode := node.New(node.Folder, rootID)
+	_, err = repo.Put(firstChildNode)
+	if err != nil {
+		t.Fatal(err)
+	}
+	secondChildNode := node.New(node.Folder, rootID)
+	secondID, err := repo.Put(secondChildNode)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if id == "" {
-		t.Fatal("id not returned")
-	}
-
-	firstChildNode := node.New("IT", node.Folder, rootNode.ID, "x")
-
-	id, err = repo.Put(firstChildNode)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if id == "" {
-		t.Fatal("id not returned")
-	}
-
-	secondChildNode := node.New("HR", node.Folder, rootNode.ID, "x")
-
-	id, err = repo.Put(secondChildNode)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if id == "" {
-		t.Fatal("id not returned")
-	}
-
-	var dbNode node.Node
-
-	err = db.QueryRow("select id, name, kind, owner from vinodes.nodes where id = $1", id).Scan(&dbNode.ID, &dbNode.Name, &dbNode.Kind, &dbNode.Owner)
+	var n node.Node
+	var p sql.NullString
+	var lft, rgt int
+	query := "select id, parent, lft, rgt, kind from vinodes.nodes where id = $1"
+	err = db.QueryRow(query, secondID).Scan(&n.ID, &p, &lft, &rgt, &n.Kind)
 
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if secondChildNode.ID != dbNode.ID ||
-		secondChildNode.Name != dbNode.Name ||
-		secondChildNode.Kind != dbNode.Kind ||
-		secondChildNode.Owner != dbNode.Owner {
-		t.Fatal("propertie error")
+	if secondChildNode.Kind != n.Kind {
+		t.Fatal("kind error")
+	}
+	if !p.Valid {
+		t.Fatal("valid parent expected")
+	}
+	if rgt-lft-1 != 0 {
+		t.Fatal("lft or rgt error")
 	}
 }
 
 func TestGet(t *testing.T) {
-	db, err := testutil.GetDB()
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	db := testutil.GetDB()
 	repo := postgres.NewRepository(db)
-
-	rootNode := node.New("Home", node.Folder, "", "x")
-
-	id, err := repo.Put(rootNode)
+	rootNode := node.New(node.Folder, "")
+	rootID, err := repo.Put(rootNode)
+	if err != nil {
+		t.Fatal(err)
+	}
+	firstChildNode := node.New(node.Folder, rootID)
+	firstID, err := repo.Put(firstChildNode)
+	if err != nil {
+		t.Fatal(err)
+	}
+	secondChildNode := node.New(node.Folder, rootID)
+	secondID, err := repo.Put(secondChildNode)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if id == "" {
-		t.Fatal("id not returned")
-	}
-
-	firstChildNode := node.New("IT", node.Folder, rootNode.ID, "x")
-
-	id, err = repo.Put(firstChildNode)
+	n, err := repo.Get(rootID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if id == "" {
-		t.Fatal("id not returned")
+	if rootNode.Parent != n.Parent ||
+		rootNode.Kind != n.Kind {
+		t.Fatal("root properties error")
 	}
 
-	a, err := repo.Get(rootNode.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	ids := []node.ID{firstID, secondID}
 
-	if a.ID != rootNode.ID ||
-		a.Name != rootNode.Name ||
-		a.Owner != rootNode.Owner ||
-		a.Parent != rootNode.Parent {
-		t.Fatal("properties differ")
-	}
-
-	a, err = repo.Get(firstChildNode.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if a.ID != firstChildNode.ID ||
-		a.Name != firstChildNode.Name ||
-		a.Owner != firstChildNode.Owner ||
-		a.Parent != firstChildNode.Parent {
-		t.Fatal("properties differ")
+	for _, j := range n.Children {
+		fail := true
+		for _, c := range ids {
+			if j == c {
+				fail = false
+			}
+		}
+		if fail {
+			t.Fatal("children not found")
+		}
 	}
 }

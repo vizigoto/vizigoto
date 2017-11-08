@@ -4,10 +4,6 @@
 
 package item
 
-import (
-	"github.com/vizigoto/vizigoto/user"
-)
-
 // ID uniquely identifies a particular item.
 type ID string
 
@@ -16,14 +12,12 @@ type Folder struct {
 	ID       ID
 	Name     string
 	Parent   ID
-	Owner    user.ID
-	Readme   string
 	Children []ID
 }
 
 // NewFolder allocates a folder and returns a pointer to it.
-func NewFolder(name string, parent ID, owner user.ID) *Folder {
-	return &Folder{Name: name, Parent: parent, Owner: owner, Children: []ID{}}
+func NewFolder(name string, parent ID) *Folder {
+	return &Folder{Name: name, Parent: parent, Children: []ID{}}
 }
 
 // Report represents a report in the content tree.
@@ -31,13 +25,12 @@ type Report struct {
 	ID      ID
 	Name    string
 	Parent  ID
-	Owner   user.ID
 	Content string
 }
 
 // NewReport allocates a report and returns a pointer to it.
-func NewReport(name string, parent ID, owner user.ID, content string) *Report {
-	return &Report{Name: name, Parent: parent, Owner: owner, Content: content}
+func NewReport(name string, parent ID, content string) *Report {
+	return &Report{Name: name, Parent: parent, Content: content}
 }
 
 // Repository provides a limited interface to a storage layer.
@@ -48,8 +41,8 @@ type Repository interface {
 
 type Service interface {
 	Get(id ID) (interface{}, error)
-	AddFolder(name string, parent ID, owner user.ID) (ID, error)
-	AddReport(name string, parent ID, owner user.ID, content string) (ID, error)
+	AddFolder(name string, parent ID) (ID, error)
+	AddReport(name string, parent ID, content string) (ID, error)
 }
 
 type service struct {
@@ -64,12 +57,12 @@ func (s *service) Get(id ID) (interface{}, error) {
 	return s.repo.Get(id)
 }
 
-func (s *service) AddFolder(name string, parent ID, owner user.ID) (ID, error) {
-	folder := NewFolder(name, parent, owner)
+func (s *service) AddFolder(name string, parent ID) (ID, error) {
+	folder := NewFolder(name, parent)
 	return s.repo.Put(folder)
 }
 
-func (s *service) AddReport(name string, parent ID, owner user.ID, content string) (ID, error) {
-	report := NewReport(name, parent, owner, content)
+func (s *service) AddReport(name string, parent ID, content string) (ID, error) {
+	report := NewReport(name, parent, content)
 	return s.repo.Put(report)
 }

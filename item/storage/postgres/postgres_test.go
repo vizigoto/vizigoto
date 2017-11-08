@@ -15,21 +15,15 @@ import (
 )
 
 func TestPutGetFolder(t *testing.T) {
-	db, err := testutil.GetDB()
-	if err != nil {
-		t.Fatal(err)
-	}
+	db := testutil.GetDB()
 
 	nodes := node.NewRepository(db)
-	var repo item.Repository = postgres.NewRepository(db, nodes)
-	root := item.NewFolder("Home", "", "")
+	repo := postgres.NewRepository(db, nodes)
+
+	root := item.NewFolder("Home", "")
 	id, err := repo.Put(root)
 	if err != nil {
 		t.Fatal(err)
-	}
-
-	if id == "" {
-		t.Fatal("id error")
 	}
 
 	f, err := repo.Get(id)
@@ -42,33 +36,28 @@ func TestPutGetFolder(t *testing.T) {
 		t.Fatal("type match fail")
 	}
 
-	if folder.Name != "Home" {
-		t.Fatal("name error")
+	if folder.Name != root.Name ||
+		folder.Parent != root.Parent {
+		t.Fatal("properties error")
 	}
 }
 
 func TestPutGetReport(t *testing.T) {
-	db, err := testutil.GetDB()
-	if err != nil {
-		t.Fatal(err)
-	}
+	db := testutil.GetDB()
 
 	nodes := node.NewRepository(db)
-	var repo item.Repository = postgres.NewRepository(db, nodes)
-	root := item.NewFolder("Home", "", "")
-	_, err = repo.Put(root)
+	repo := postgres.NewRepository(db, nodes)
+
+	root := item.NewFolder("Home", "")
+	rootID, err := repo.Put(root)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	r := item.NewReport("hr report", root.ID, "", "content")
+	r := item.NewReport("hr report", rootID, "content")
 	id, err := repo.Put(r)
 	if err != nil {
 		t.Fatal(err)
-	}
-
-	if id == "" {
-		t.Fatal("id error")
 	}
 
 	result, err := repo.Get(id)
@@ -81,11 +70,7 @@ func TestPutGetReport(t *testing.T) {
 		t.Fatal("type error")
 	}
 
-	t.Log(r)
-	t.Log(report)
-
 	if r.Name != report.Name ||
-		r.Owner != report.Owner ||
 		r.Parent != report.Parent ||
 		r.Content != report.Content {
 		t.Fatal("properties error")

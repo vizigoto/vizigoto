@@ -21,90 +21,111 @@ func NewRepository(db *sql.DB) node.Repository {
 }
 
 func (repo *repository) Get(id node.ID) (*node.Node, error) {
-	n := &node.Node{}
-	n.ID = id
+	n := &node.Node{ID: id, Children: []node.ID{}}
 
-	var p sql.NullString
-	var kind string
-	err := repo.db.QueryRow("select name, kind, owner, parent from vinodes.nodes where id = $1", id).Scan(&n.Name, &kind, &n.Owner, &p)
+	rows, err := repo.db.Query(sqlGet, id)
 	if err != nil {
 		return nil, err
 	}
-	if p.Valid {
-		n.Parent = node.ID(p.String)
-	}
+	defer rows.Close()
 
-	if kind == "folder" {
-		n.Kind = node.Folder
-	}
+	for rows.Next() {
+		var r struct {
+			parent  sql.NullString
+			kind    node.Kind
+			childID sql.NullString
+		}
 
-	if kind == "report" {
-		n.Kind = node.Report
+		err := rows.Scan(&r.parent, &r.kind, &r.childID)
+		if err != nil {
+			return nil, err
+		}
+
+		if r.parent.Valid {
+			n.Parent = node.ID(r.parent.String)
+		}
+		n.Kind = r.kind
+
+		if r.childID.Valid {
+			n.Children = append(n.Children, node.ID(r.childID.String))
+		}
 	}
 
 	return n, nil
 }
 
 func (repo *repository) Put(n *node.Node) (node.ID, error) {
-	id := uuid.New()
-	n.ID = node.ID(id)
 	if n.Parent == "" {
 		return repo.putRoot(n)
 	}
 	return repo.putChild(n)
 }
 
-func (repo *repository) putRoot(n *node.Node) (node.ID, error) {
-	_, err := repo.db.Exec("insert into vinodes.nodes(id, parent, name, kind, owner, protected) values ($1, $2, $3, $4, $5, $6)",
-		n.ID, nil, n.Name, n.Kind, n.Owner, true)
-	if err != nil {
+func (repo *repository) putRoot(n *node.Node) (id node.ID, err error) {
+	id = node.ID(uuid.New())
+	if _, err = repo.db.Exec(sqlInsert, id, nil, 0, 1, n.Kind); err != nil {
 		return "", err
 	}
-	return n.ID, nil
+	return
 }
 
-func (repo *repository) putChild(n *node.Node) (node.ID, error) {
+func (repo *repository) putChild(n *node.Node) (id node.ID, err error) {
 	var lft, rgt int
-	repo.db.QueryRow("select lft, rgt from vinodes.nodes where id = $1", n.Parent).Scan(&lft, &rgt)
-	if lft-(rgt-1) == 0 {
+	if err = repo.db.QueryRow(sqlPos, n.Parent).Scan(&lft, &rgt); err != nil {
+		return
+	}
+	if rgt-1-lft == 0 {
 		return repo.putFirstChild(n, lft)
 	}
 	return repo.putSecondChild(n, rgt)
 }
 
-func (repo *repository) putFirstChild(n *node.Node, lft int) (node.ID, error) {
-	_, err := repo.db.Exec("update vinodes.nodes set rgt = rgt + 2 where rgt > $1", lft)
+func (repo *repository) putFirstChild(n *node.Node, lft int) (id node.ID, err error) {
+	tx, err := repo.db.Begin()
 	if err != nil {
+		return
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+	if _, err = tx.Exec("update vinodes.nodes set rgt = rgt + 2 where rgt > $1", lft); err != nil {
+		return
+	}
+	if _, err = tx.Exec("update vinodes.nodes set lft = lft + 2 where lft > $1", lft); err != nil {
+		return
+	}
+	id = node.ID(uuid.New())
+	if _, err = tx.Exec(sqlInsert, id, n.Parent, lft+1, lft+2, n.Kind); err != nil {
 		return "", err
 	}
-	_, err = repo.db.Exec("update vinodes.nodes set lft = lft + 2 where lft > $1", lft)
-	if err != nil {
-		return "", err
-	}
-
-	_, err = repo.db.Exec("insert into vinodes.nodes(id, parent, lft, rgt, name, kind, owner, protected) values ($1, $2, $3, $4, $5, $6, $7, $8)",
-		n.ID, n.Parent, lft+1, lft+2, n.Name, n.Kind, n.Owner, true)
-	if err != nil {
-		return "", err
-	}
-
-	return n.ID, nil
+	return
 }
 
-func (repo *repository) putSecondChild(n *node.Node, lft int) (node.ID, error) {
-	_, err := repo.db.Exec("update vinodes.nodes set rgt = rgt + 2 where rgt >= $1", lft)
+func (repo *repository) putSecondChild(n *node.Node, lft int) (id node.ID, err error) {
+	tx, err := repo.db.Begin()
 	if err != nil {
+		return
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+	if _, err = repo.db.Exec("update vinodes.nodes set rgt = rgt + 2 where rgt >= $1", lft); err != nil {
+		return
+	}
+	if _, err = repo.db.Exec("update vinodes.nodes set lft = lft + 2 where lft >= $1", lft); err != nil {
+		return
+	}
+	id = node.ID(uuid.New())
+	if _, err = repo.db.Exec(sqlInsert, id, n.Parent, lft, lft+1, n.Kind); err != nil {
 		return "", err
 	}
-	_, err = repo.db.Exec("update vinodes.nodes set lft = lft + 2 where lft >= $1", lft)
-	if err != nil {
-		return "", err
-	}
-
-	_, err = repo.db.Exec("insert into vinodes.nodes(id, parent, lft, rgt, name, kind, owner, protected) values ($1, $2, $3, $4, $5, $6, $7, $8)",
-		n.ID, n.Parent, lft, lft+1, n.Name, n.Kind, n.Owner, true)
-	if err != nil {
-		return "", err
-	}
-	return n.ID, nil
+	return
 }

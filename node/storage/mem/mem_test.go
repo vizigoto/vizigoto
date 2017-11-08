@@ -11,12 +11,69 @@ import (
 	"github.com/vizigoto/vizigoto/node/storage/mem"
 )
 
+func TestItemNotFound(t *testing.T) {
+	var repo node.Repository = mem.NewRepository()
+	_, err := repo.Get("abc")
+	if err == nil {
+		t.Fatal("error expected")
+	}
+}
+
+func TestSimplePutGetFolder(t *testing.T) {
+	var repo node.Repository = mem.NewRepository()
+	folder := node.New(node.Folder, "")
+	folderID, err := repo.Put(folder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	i, err := repo.Get(folderID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if folder.ID != i.ID {
+		t.Fatal("id error")
+	}
+	if folder.Kind != i.Kind {
+		t.Fatal("kind error")
+	}
+}
+
+func TestSimplePutGetReport(t *testing.T) {
+	var repo node.Repository = mem.NewRepository()
+	report := node.New(node.Report, "")
+	reportID, err := repo.Put(report)
+	if err != nil {
+		t.Fatal(err)
+	}
+	i, err := repo.Get(reportID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if report.ID != i.ID {
+		t.Fatal("id error")
+	}
+	if report.Kind != i.Kind {
+		t.Fatal("kind error")
+	}
+}
+
 func TestPutGet(t *testing.T) {
 	var repo node.Repository = mem.NewRepository()
-	root := node.New("Home", node.Folder, node.ID(""), "x")
+
+	root := node.New(node.Folder, "")
 	rootID, err := repo.Put(root)
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	children := []string{"a", "b", "c", "d"}
+	childrenIDs := []node.ID{}
+	for range children {
+		id, err := repo.Put(node.New(node.Folder, rootID))
+		if err != nil {
+			t.Fatal(err)
+		}
+		childrenIDs = append(childrenIDs, id)
 	}
 
 	i, err := repo.Get(rootID)
@@ -24,38 +81,15 @@ func TestPutGet(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if root.ID != i.ID {
-		t.Fatal("id error")
-	}
-
-	_, err = repo.Get("unknow")
-	if err == nil {
-		t.Fatal("error expected")
-	}
-
-	children := []string{"a", "b", "c", "d"}
-	childrenIDs := []node.ID{}
-	for _, c := range children {
-		id, err := repo.Put(node.New(c, node.Folder, rootID, "x"))
-		if err != nil {
-			t.Fatal(err)
-		}
-		childrenIDs = append(childrenIDs, id)
-	}
-
-	i, err = repo.Get(rootID)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ok := true
 	for _, j := range i.Children {
+		fail := true
 		for _, c := range childrenIDs {
 			if j == c {
-				ok = false
+				fail = false
 			}
 		}
-	}
-	if ok {
-		t.Fatal("children fail")
+		if fail {
+			t.Fatal("children not found")
+		}
 	}
 }

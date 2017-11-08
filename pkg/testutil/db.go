@@ -20,8 +20,8 @@ func (p dbParams) String() string {
 		p.hostname, p.database, p.username, p.password)
 }
 
-// GetDB opens a database connection for testing purposes only. 
-func GetDB() (*sql.DB, error) {
+// GetDB opens a database connection for testing purposes only.
+func GetDB() *sql.DB {
 	params := GetParams()
 	conInfo := fmt.Sprintf("%s", params)
 	db, err := sql.Open("postgres", conInfo)
@@ -29,23 +29,19 @@ func GetDB() (*sql.DB, error) {
 	if err != nil {
 		panic(err)
 	}
-
 	_, err = db.Exec("truncate vinodes.nodes cascade")
 	if err != nil {
 		panic(err)
 	}
-
 	_, err = db.Exec("truncate viitems.folders cascade")
 	if err != nil {
 		panic(err)
 	}
-
 	_, err = db.Exec("truncate viitems.reports cascade")
 	if err != nil {
 		panic(err)
 	}
-
-	return db, nil
+	return db
 }
 
 func GetParams() dbParams {

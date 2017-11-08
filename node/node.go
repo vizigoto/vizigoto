@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD 3-Clause License
 // license that can be found in the LICENSE file.
 
+// Package node provides a low level API to handle nodes in a content tree.
 package node
-
-import (
-	"github.com/vizigoto/vizigoto/user"
-)
 
 // ID uniquely identifies a particular node.
 type ID string
@@ -23,22 +20,14 @@ const (
 // Node represents one single node in the content tree.
 type Node struct {
 	ID       ID
-	Name     string
 	Kind     Kind
 	Parent   ID
-	Owner    user.ID
 	Children []ID
 }
 
 // New allocates a node and returns a pointer to it.
-func New(name string, kind Kind, parent ID, owner user.ID) *Node {
-	return &Node{
-		Name:     name,
-		Kind:     kind,
-		Parent:   parent,
-		Owner:    owner,
-		Children: []ID{},
-	}
+func New(kind Kind, parent ID) *Node {
+	return &Node{Kind: kind, Parent: parent, Children: []ID{}}
 }
 
 // Repository provides a limited interface to a storage layer.

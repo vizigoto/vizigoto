@@ -17,6 +17,7 @@ type repository struct {
 	nodes node.Repository
 }
 
+// NewRepository returns an instance of a item repository.
 func NewRepository(db *sql.DB, nodes node.Repository) item.Repository {
 	return &repository{db, nodes}
 }
@@ -26,41 +27,37 @@ func (repo *repository) Get(id item.ID) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	if n.Kind == node.Folder {
 		return repo.getFolder(n)
 	}
-
 	if n.Kind == node.Report {
 		return repo.getReport(n)
 	}
-
 	return nil, errors.New("item not found")
 }
 
 func (repo *repository) getFolder(n *node.Node) (interface{}, error) {
 	folder := &item.Folder{}
 	folder.ID = item.ID(n.ID)
-	folder.Name = n.Name
-	folder.Owner = n.Owner
-	var id string
-	err := repo.db.QueryRow("select id from viitems.folders where id = $1", n.ID).Scan(&id)
+	folder.Parent = item.ID(n.Parent)
+
+	err := repo.db.QueryRow("select name from viitems.items where id = $1", n.ID).Scan(&folder.Name)
 	if err != nil {
 		return nil, err
 	}
-	if item.ID(id) != folder.ID {
-		return nil, errors.New("internal id error")
-	}
+
 	return folder, nil
 }
 
 func (repo *repository) getReport(n *node.Node) (interface{}, error) {
 	report := &item.Report{}
 	report.ID = item.ID(n.ID)
-	report.Name = n.Name
-	report.Owner = n.Owner
-	err := repo.db.QueryRow("select content from viitems.reports where id = $1", n.ID).Scan(&report.Content)
-	if err != nil {
+	report.Parent = item.ID(n.Parent)
+
+	if err := repo.db.QueryRow("select name from viitems.items where id = $1", n.ID).Scan(&report.Name); err != nil {
+		return nil, err
+	}
+	if err := repo.db.QueryRow("select content from viitems.reports where id = $1", n.ID).Scan(&report.Content); err != nil {
 		return nil, err
 	}
 	return report, nil
@@ -70,38 +67,66 @@ func (repo *repository) Put(i interface{}) (item.ID, error) {
 	if folder, ok := i.(*item.Folder); ok {
 		return repo.putFolder(folder)
 	}
-
 	if report, ok := i.(*item.Report); ok {
 		return repo.putReport(report)
 	}
-
-	panic("type not identified")
+	return "", nil
 }
 
-func (repo *repository) putFolder(folder *item.Folder) (item.ID, error) {
-	n := node.New(folder.Name, node.Folder, node.ID(folder.Parent), folder.Owner)
+func (repo *repository) putFolder(folder *item.Folder) (id item.ID, err error) {
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	n := node.New(node.Folder, node.ID(folder.Parent))
 	nodeID, err := repo.nodes.Put(n)
 	if err != nil {
-		return "", err
+		return
 	}
-	_, err = repo.db.Exec("insert into viitems.folders values($1)", nodeID)
+	_, err = tx.Exec("insert into viitems.items (id, name) values($1, $2)", nodeID, folder.Name)
 	if err != nil {
-		return "", err
+		return
 	}
-
+	_, err = tx.Exec("insert into viitems.folders (id) values($1)", nodeID)
+	if err != nil {
+		return
+	}
 	return item.ID(nodeID), nil
 }
 
-func (repo *repository) putReport(report *item.Report) (item.ID, error) {
-	n := node.New(report.Name, node.Report, node.ID(report.Parent), report.Owner)
+func (repo *repository) putReport(report *item.Report) (id item.ID, err error) {
+	tx, err := repo.db.Begin()
+	if err != nil {
+		return
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	n := node.New(node.Report, node.ID(report.Parent))
 	nodeID, err := repo.nodes.Put(n)
 	if err != nil {
-		return "", err
+		return
 	}
-	_, err = repo.db.Exec("insert into viitems.reports(id, content) values($1, $2)", nodeID, report.Content)
+	_, err = tx.Exec("insert into viitems.items(id, name) values($1, $2)", nodeID, report.Name)
 	if err != nil {
-		return "", err
+		return
 	}
-
+	_, err = tx.Exec("insert into viitems.reports(id, content) values($1, $2)", nodeID, report.Content)
+	if err != nil {
+		return
+	}
 	return item.ID(nodeID), nil
 }
