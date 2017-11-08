@@ -21,12 +21,12 @@ func loadHomeData() {
 			"is_report": "",
       "children": [
         {
-					"id": "fin", "kind": "folder", "name":"Financeiro",
+					"id": "fin", "kind": "folder", "name":"Financial Reports",
 					"is_folder": "true",
 					"is_report": ""
 				},
         {
-					"id": "rh", "kind": "folder", "name":"Recursos Humanos",
+					"id": "rh", "kind": "folder", "name":"Human Resources",
 					"is_folder": "true",
 					"is_report": ""
 				},
@@ -47,18 +47,18 @@ func loadHomeData() {
 func loadItemsData() {
 	j := `{"data":{
 		"item":{
-			"id": "fin", "kind": "folder", "name":"Financeiro",
+			"id": "fin", "kind": "folder", "name":"Financial Reports",
 			"path": [{"id":"","name":"home"}],
 			"is_folder": "true",
 			"is_report": "",
 			"children": [
 				{
-					"id": "con", "kind": "folder", "name":"Controladoria",
+					"id": "con", "kind": "folder", "name":"Planning",
 					"is_folder": "",
 					"is_report": "true"
 				},
 				{
-					"id": "ro", "kind": "report", "name":"Resultado Operacional",
+					"id": "ro", "kind": "report", "name":"Operational",
 					"is_folder": "",
 					"is_report": "true"
 				}
@@ -72,7 +72,7 @@ func loadItemsData() {
 
 	j = `{"data":{
 		"item":{
-			"id": "rh", "kind": "folder", "name":"Recursos Humanos",
+			"id": "rh", "kind": "folder", "name":"Human resources",
 			"path": [{"id":"","name":"home"}],
 			"is_folder": "true",
 			"is_report": "",
@@ -83,7 +83,7 @@ func loadItemsData() {
 					"is_report": "true"
 				},
 				{
-					"id": "adm", "kind": "report", "name":"Adminissoes",
+					"id": "adm", "kind": "report", "name":"Admissions",
 					"is_folder": "",
 					"is_report": "true"
 				}
