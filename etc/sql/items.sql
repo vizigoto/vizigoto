@@ -1,7 +1,7 @@
 begin;
 drop schema if exists viitems cascade;
 create schema viitems
-  create table viitems.folders (
+  create table viitems.items (
     id uuid not null primary key,
     name varchar not null
   )
