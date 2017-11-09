@@ -27,13 +27,27 @@ func (repo *repository) Get(id item.ID) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	if n.Kind == node.Folder {
+
+	kind, err := repo.getItemKind(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if item.Kind(kind) == item.KindFolder {
 		return repo.getFolder(n)
 	}
-	if n.Kind == node.Report {
+	if item.Kind(kind) == item.KindReport {
 		return repo.getReport(n)
 	}
 	return nil, errors.New("item not found")
+}
+
+func (repo *repository) getItemKind(id item.ID) (kind string, err error) {
+	err = repo.db.QueryRow("select kind from viitems.items where id = $1", id).Scan(&kind)
+	if err != nil {
+		return "", err
+	}
+	return
 }
 
 func (repo *repository) getFolder(n *node.Node) (interface{}, error) {
@@ -86,12 +100,12 @@ func (repo *repository) putFolder(folder *item.Folder) (id item.ID, err error) {
 		err = tx.Commit()
 	}()
 
-	n := node.New(node.Folder, node.ID(folder.Parent))
+	n := node.New(node.ID(folder.Parent))
 	nodeID, err := repo.nodes.Put(n)
 	if err != nil {
 		return
 	}
-	_, err = tx.Exec("insert into viitems.items (id, name) values($1, $2)", nodeID, folder.Name)
+	_, err = tx.Exec("insert into viitems.items (id, name, kind) values($1, $2, $3)", nodeID, folder.Name, item.KindFolder)
 	if err != nil {
 		return
 	}
@@ -115,12 +129,12 @@ func (repo *repository) putReport(report *item.Report) (id item.ID, err error) {
 		err = tx.Commit()
 	}()
 
-	n := node.New(node.Report, node.ID(report.Parent))
+	n := node.New(node.ID(report.Parent))
 	nodeID, err := repo.nodes.Put(n)
 	if err != nil {
 		return
 	}
-	_, err = tx.Exec("insert into viitems.items(id, name) values($1, $2)", nodeID, report.Name)
+	_, err = tx.Exec("insert into viitems.items(id, name, kind) values($1, $2, $3)", nodeID, report.Name, item.KindReport)
 	if err != nil {
 		return
 	}

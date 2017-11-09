@@ -38,7 +38,6 @@ func (repo *loggingRepository) Put(n *Node) (id ID, err error) {
 		repo.logger.Log(
 			"method", "put",
 			"id", id,
-			"kind", n.Kind,
 			"parent", n.Parent,
 			"took", time.Since(begin),
 			"err", err,
@@ -52,7 +51,6 @@ func (repo *loggingRepository) Put(n *Node) (id ID, err error) {
 func toFields(n *Node) no {
 	r := no{}
 	if n != nil {
-		r.kind = string(n.Kind)
 		r.parent = string(n.Parent)
 	}
 	return r

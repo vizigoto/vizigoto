@@ -52,7 +52,7 @@ func (repo *repository) Put(i interface{}) (item.ID, error) {
 
 	folder, ok := i.(*item.Folder)
 	if ok {
-		n := node.New(node.Folder, node.ID(folder.Parent))
+		n := node.New(node.ID(folder.Parent))
 		id, err := repo.nodes.Put(n)
 		if err != nil {
 			return "", err
@@ -63,7 +63,7 @@ func (repo *repository) Put(i interface{}) (item.ID, error) {
 
 	report, ok := i.(*item.Report)
 	if ok {
-		n := node.New(node.Report, node.ID(report.Parent))
+		n := node.New(node.ID(report.Parent))
 		id, err := repo.nodes.Put(n)
 		if err != nil {
 			return "", err

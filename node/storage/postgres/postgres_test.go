@@ -19,11 +19,11 @@ func TestGetChild(t *testing.T) {
 	defer db.Close()
 
 	repo := postgres.NewRepository(db)
-	root := node.New(node.Folder, "")
+	root := node.New("")
 	rootID, err := repo.Put(root)
 	testutil.FatalOnError(t, err)
 
-	childNode := node.New(node.Folder, rootID)
+	childNode := node.New(rootID)
 	childID, err := repo.Put(childNode)
 	testutil.FatalOnError(t, err)
 
@@ -31,7 +31,6 @@ func TestGetChild(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	if c.ID != childID ||
-		c.Kind != childNode.Kind ||
 		c.Parent != childNode.Parent {
 		t.Fatal("child error")
 	}
@@ -41,7 +40,7 @@ func TestPutRoot(t *testing.T) {
 	db := testutil.GetDB()
 	defer db.Close()
 	repo := postgres.NewRepository(db)
-	root := node.New(node.Folder, "")
+	root := node.New("")
 	id, err := repo.Put(root)
 	testutil.FatalOnError(t, err)
 
@@ -49,13 +48,10 @@ func TestPutRoot(t *testing.T) {
 	var p sql.NullString
 	var lft, rgt int
 
-	query := "select id, parent, lft, rgt, kind from vinodes.nodes where id = $1"
-	err = db.QueryRow(query, id).Scan(&n.ID, &p, &lft, &rgt, &n.Kind)
+	query := "select id, parent, lft, rgt from vinodes.nodes where id = $1"
+	err = db.QueryRow(query, id).Scan(&n.ID, &p, &lft, &rgt)
 	testutil.FatalOnError(t, err)
 
-	if root.Kind != n.Kind {
-		t.Fatal("kind error")
-	}
 	if p.Valid {
 		t.Fatal("null expected")
 	}
@@ -69,24 +65,21 @@ func TestPutFirstChild(t *testing.T) {
 	defer db.Close()
 
 	repo := postgres.NewRepository(db)
-	rootNode := node.New(node.Folder, "")
+	rootNode := node.New("")
 	rootID, err := repo.Put(rootNode)
 	testutil.FatalOnError(t, err)
 
-	childNode := node.New(node.Folder, rootID)
+	childNode := node.New(rootID)
 	childID, err := repo.Put(childNode)
 	testutil.FatalOnError(t, err)
 
 	var n node.Node
 	var p sql.NullString
 	var lft, rgt int
-	query := "select id, parent, lft, rgt, kind from vinodes.nodes where id = $1"
-	err = db.QueryRow(query, childID).Scan(&n.ID, &p, &lft, &rgt, &n.Kind)
+	query := "select id, parent, lft, rgt from vinodes.nodes where id = $1"
+	err = db.QueryRow(query, childID).Scan(&n.ID, &p, &lft, &rgt)
 	testutil.FatalOnError(t, err)
 
-	if childNode.Kind != n.Kind {
-		t.Fatal("kind error")
-	}
 	if !p.Valid {
 		t.Fatal("valid parent expected")
 	}
@@ -100,28 +93,25 @@ func TestPutSecondChild(t *testing.T) {
 	defer db.Close()
 
 	repo := postgres.NewRepository(db)
-	rootNode := node.New(node.Folder, "")
+	rootNode := node.New("")
 	rootID, err := repo.Put(rootNode)
 	testutil.FatalOnError(t, err)
 
-	firstChildNode := node.New(node.Folder, rootID)
+	firstChildNode := node.New(rootID)
 	_, err = repo.Put(firstChildNode)
 	testutil.FatalOnError(t, err)
 
-	secondChildNode := node.New(node.Folder, rootID)
+	secondChildNode := node.New(rootID)
 	secondID, err := repo.Put(secondChildNode)
 	testutil.FatalOnError(t, err)
 
 	var n node.Node
 	var p sql.NullString
 	var lft, rgt int
-	query := "select id, parent, lft, rgt, kind from vinodes.nodes where id = $1"
-	err = db.QueryRow(query, secondID).Scan(&n.ID, &p, &lft, &rgt, &n.Kind)
+	query := "select id, parent, lft, rgt from vinodes.nodes where id = $1"
+	err = db.QueryRow(query, secondID).Scan(&n.ID, &p, &lft, &rgt)
 	testutil.FatalOnError(t, err)
 
-	if secondChildNode.Kind != n.Kind {
-		t.Fatal("kind error")
-	}
 	if !p.Valid {
 		t.Fatal("valid parent expected")
 	}
@@ -135,23 +125,22 @@ func TestGet(t *testing.T) {
 	defer db.Close()
 
 	repo := postgres.NewRepository(db)
-	rootNode := node.New(node.Folder, "")
+	rootNode := node.New("")
 	rootID, err := repo.Put(rootNode)
 	testutil.FatalOnError(t, err)
 
-	firstChildNode := node.New(node.Folder, rootID)
+	firstChildNode := node.New(rootID)
 	firstID, err := repo.Put(firstChildNode)
 	testutil.FatalOnError(t, err)
 
-	secondChildNode := node.New(node.Folder, rootID)
+	secondChildNode := node.New(rootID)
 	secondID, err := repo.Put(secondChildNode)
 	testutil.FatalOnError(t, err)
 
 	n, err := repo.Get(rootID)
 	testutil.FatalOnError(t, err)
 
-	if rootNode.Parent != n.Parent ||
-		rootNode.Kind != n.Kind {
+	if rootNode.Parent != n.Parent {
 		t.Fatal("root properties error")
 	}
 

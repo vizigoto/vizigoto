@@ -22,7 +22,7 @@ func TestItemNotFound(t *testing.T) {
 
 func TestSimplePutGetFolder(t *testing.T) {
 	var repo node.Repository = mem.NewRepository()
-	folder := node.New(node.Folder, "")
+	folder := node.New("")
 	folderID, err := repo.Put(folder)
 	testutil.FatalOnError(t, err)
 
@@ -33,14 +33,11 @@ func TestSimplePutGetFolder(t *testing.T) {
 	if folder.ID != i.ID {
 		t.Fatal("id error")
 	}
-	if folder.Kind != i.Kind {
-		t.Fatal("kind error")
-	}
 }
 
 func TestSimplePutGetReport(t *testing.T) {
 	var repo node.Repository = mem.NewRepository()
-	report := node.New(node.Report, "")
+	report := node.New("")
 	reportID, err := repo.Put(report)
 	testutil.FatalOnError(t, err)
 
@@ -50,22 +47,19 @@ func TestSimplePutGetReport(t *testing.T) {
 	if report.ID != i.ID {
 		t.Fatal("id error")
 	}
-	if report.Kind != i.Kind {
-		t.Fatal("kind error")
-	}
 }
 
 func TestPutGet(t *testing.T) {
 	var repo node.Repository = mem.NewRepository()
 
-	root := node.New(node.Folder, "")
+	root := node.New("")
 	rootID, err := repo.Put(root)
 	testutil.FatalOnError(t, err)
 
 	children := []string{"a", "b", "c", "d"}
 	childrenIDs := []node.ID{}
 	for range children {
-		id, err := repo.Put(node.New(node.Folder, rootID))
+		id, err := repo.Put(node.New(rootID))
 		testutil.FatalOnError(t, err)
 
 		childrenIDs = append(childrenIDs, id)

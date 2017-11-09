@@ -32,11 +32,10 @@ func (repo *repository) Get(id node.ID) (*node.Node, error) {
 	for rows.Next() {
 		var r struct {
 			parent  sql.NullString
-			kind    node.Kind
 			childID sql.NullString
 		}
 
-		err := rows.Scan(&r.parent, &r.kind, &r.childID)
+		err := rows.Scan(&r.parent, &r.childID)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +43,6 @@ func (repo *repository) Get(id node.ID) (*node.Node, error) {
 		if r.parent.Valid {
 			n.Parent = node.ID(r.parent.String)
 		}
-		n.Kind = r.kind
 
 		if r.childID.Valid {
 			n.Children = append(n.Children, node.ID(r.childID.String))
@@ -63,7 +61,7 @@ func (repo *repository) Put(n *node.Node) (node.ID, error) {
 
 func (repo *repository) putRoot(n *node.Node) (id node.ID, err error) {
 	id = node.ID(uuid.New())
-	if _, err = repo.db.Exec(sqlInsert, id, nil, 0, 1, n.Kind); err != nil {
+	if _, err = repo.db.Exec(sqlInsert, id, nil, 0, 1); err != nil {
 		return "", err
 	}
 	return
@@ -99,7 +97,7 @@ func (repo *repository) putFirstChild(n *node.Node, lft int) (id node.ID, err er
 		return
 	}
 	id = node.ID(uuid.New())
-	if _, err = tx.Exec(sqlInsert, id, n.Parent, lft+1, lft+2, n.Kind); err != nil {
+	if _, err = tx.Exec(sqlInsert, id, n.Parent, lft+1, lft+2); err != nil {
 		return "", err
 	}
 	return
@@ -124,7 +122,7 @@ func (repo *repository) putSecondChild(n *node.Node, lft int) (id node.ID, err e
 		return
 	}
 	id = node.ID(uuid.New())
-	if _, err = repo.db.Exec(sqlInsert, id, n.Parent, lft, lft+1, n.Kind); err != nil {
+	if _, err = repo.db.Exec(sqlInsert, id, n.Parent, lft, lft+1); err != nil {
 		return "", err
 	}
 	return
