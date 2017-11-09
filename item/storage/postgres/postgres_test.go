@@ -16,6 +16,7 @@ import (
 
 func TestPutGetFolder(t *testing.T) {
 	db := testutil.GetDB()
+	defer db.Close()
 
 	nodes := node.NewRepository(db)
 	repo := postgres.NewRepository(db, nodes)
@@ -44,6 +45,7 @@ func TestPutGetFolder(t *testing.T) {
 
 func TestPutGetReport(t *testing.T) {
 	db := testutil.GetDB()
+	defer db.Close()
 
 	nodes := node.NewRepository(db)
 	repo := postgres.NewRepository(db, nodes)

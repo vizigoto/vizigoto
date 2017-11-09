@@ -16,22 +16,19 @@ import (
 
 func TestGetChild(t *testing.T) {
 	db := testutil.GetDB()
+	defer db.Close()
+
 	repo := postgres.NewRepository(db)
 	root := node.New(node.Folder, "")
 	rootID, err := repo.Put(root)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
+
 	childNode := node.New(node.Folder, rootID)
 	childID, err := repo.Put(childNode)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	c, err := repo.Get(childID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	if c.ID != childID ||
 		c.Kind != childNode.Kind ||
@@ -42,22 +39,20 @@ func TestGetChild(t *testing.T) {
 
 func TestPutRoot(t *testing.T) {
 	db := testutil.GetDB()
+	defer db.Close()
 	repo := postgres.NewRepository(db)
 	root := node.New(node.Folder, "")
 	id, err := repo.Put(root)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	var n node.Node
 	var p sql.NullString
 	var lft, rgt int
+
 	query := "select id, parent, lft, rgt, kind from vinodes.nodes where id = $1"
 	err = db.QueryRow(query, id).Scan(&n.ID, &p, &lft, &rgt, &n.Kind)
+	testutil.FatalOnError(t, err)
 
-	if err != nil {
-		t.Fatal(err)
-	}
 	if root.Kind != n.Kind {
 		t.Fatal("kind error")
 	}
@@ -71,27 +66,24 @@ func TestPutRoot(t *testing.T) {
 
 func TestPutFirstChild(t *testing.T) {
 	db := testutil.GetDB()
+	defer db.Close()
+
 	repo := postgres.NewRepository(db)
 	rootNode := node.New(node.Folder, "")
 	rootID, err := repo.Put(rootNode)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
+
 	childNode := node.New(node.Folder, rootID)
 	childID, err := repo.Put(childNode)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	var n node.Node
 	var p sql.NullString
 	var lft, rgt int
 	query := "select id, parent, lft, rgt, kind from vinodes.nodes where id = $1"
 	err = db.QueryRow(query, childID).Scan(&n.ID, &p, &lft, &rgt, &n.Kind)
+	testutil.FatalOnError(t, err)
 
-	if err != nil {
-		t.Fatal(err)
-	}
 	if childNode.Kind != n.Kind {
 		t.Fatal("kind error")
 	}
@@ -105,32 +97,28 @@ func TestPutFirstChild(t *testing.T) {
 
 func TestPutSecondChild(t *testing.T) {
 	db := testutil.GetDB()
+	defer db.Close()
+
 	repo := postgres.NewRepository(db)
 	rootNode := node.New(node.Folder, "")
 	rootID, err := repo.Put(rootNode)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
+
 	firstChildNode := node.New(node.Folder, rootID)
 	_, err = repo.Put(firstChildNode)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
+
 	secondChildNode := node.New(node.Folder, rootID)
 	secondID, err := repo.Put(secondChildNode)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	var n node.Node
 	var p sql.NullString
 	var lft, rgt int
 	query := "select id, parent, lft, rgt, kind from vinodes.nodes where id = $1"
 	err = db.QueryRow(query, secondID).Scan(&n.ID, &p, &lft, &rgt, &n.Kind)
+	testutil.FatalOnError(t, err)
 
-	if err != nil {
-		t.Fatal(err)
-	}
 	if secondChildNode.Kind != n.Kind {
 		t.Fatal("kind error")
 	}
@@ -144,27 +132,23 @@ func TestPutSecondChild(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	db := testutil.GetDB()
+	defer db.Close()
+
 	repo := postgres.NewRepository(db)
 	rootNode := node.New(node.Folder, "")
 	rootID, err := repo.Put(rootNode)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
+
 	firstChildNode := node.New(node.Folder, rootID)
 	firstID, err := repo.Put(firstChildNode)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
+
 	secondChildNode := node.New(node.Folder, rootID)
 	secondID, err := repo.Put(secondChildNode)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	n, err := repo.Get(rootID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	if rootNode.Parent != n.Parent ||
 		rootNode.Kind != n.Kind {

@@ -44,6 +44,7 @@ func GetDB() *sql.DB {
 	return db
 }
 
+// GetParams returns the correct params according to the environment.
 func GetParams() dbParams {
 	if len(os.Getenv("SEMAPHORE")) > 0 {
 		return getSemaphoreParams()
