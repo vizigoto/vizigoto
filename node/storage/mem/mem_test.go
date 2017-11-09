@@ -9,6 +9,7 @@ import (
 
 	"github.com/vizigoto/vizigoto/node"
 	"github.com/vizigoto/vizigoto/node/storage/mem"
+	"github.com/vizigoto/vizigoto/pkg/testutil"
 )
 
 func TestItemNotFound(t *testing.T) {
@@ -23,9 +24,8 @@ func TestSimplePutGetFolder(t *testing.T) {
 	var repo node.Repository = mem.NewRepository()
 	folder := node.New(node.Folder, "")
 	folderID, err := repo.Put(folder)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
+
 	i, err := repo.Get(folderID)
 	if err != nil {
 		t.Fatal(err)
@@ -42,13 +42,11 @@ func TestSimplePutGetReport(t *testing.T) {
 	var repo node.Repository = mem.NewRepository()
 	report := node.New(node.Report, "")
 	reportID, err := repo.Put(report)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
+
 	i, err := repo.Get(reportID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
+
 	if report.ID != i.ID {
 		t.Fatal("id error")
 	}
@@ -62,24 +60,19 @@ func TestPutGet(t *testing.T) {
 
 	root := node.New(node.Folder, "")
 	rootID, err := repo.Put(root)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	children := []string{"a", "b", "c", "d"}
 	childrenIDs := []node.ID{}
 	for range children {
 		id, err := repo.Put(node.New(node.Folder, rootID))
-		if err != nil {
-			t.Fatal(err)
-		}
+		testutil.FatalOnError(t, err)
+
 		childrenIDs = append(childrenIDs, id)
 	}
 
 	i, err := repo.Get(rootID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	for _, j := range i.Children {
 		fail := true

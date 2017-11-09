@@ -20,5 +20,5 @@ func ExampleNode() {
 		log.Println(err)
 	}
 
-	fmt.Printf("node ID: %s", id)
+	fmt.Printf("node ID: %v", id)
 }

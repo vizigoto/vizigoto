@@ -10,6 +10,7 @@ import (
 	"github.com/vizigoto/vizigoto/item"
 	"github.com/vizigoto/vizigoto/item/storage/mem"
 	node "github.com/vizigoto/vizigoto/node/storage/mem"
+	"github.com/vizigoto/vizigoto/pkg/testutil"
 )
 
 func TestPutGetFolder(t *testing.T) {
@@ -19,20 +20,15 @@ func TestPutGetFolder(t *testing.T) {
 	name, parent := "Home", item.ID("")
 	root := item.NewFolder(name, parent)
 	rootID, err := repo.Put(root)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	f, err := repo.Get(rootID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	folder, ok := f.(*item.Folder)
 	if !ok {
 		t.Fatal("type match fail")
 	}
-
 	if folder.Name != name ||
 		folder.Parent != parent {
 		t.Fatal("folder properties error")
@@ -46,14 +42,10 @@ func TestPutGetReport(t *testing.T) {
 	name, parent, content := "Report", item.ID(""), "<h1>report"
 	r := item.NewReport(name, parent, content)
 	id, err := repo.Put(r)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	f, err := repo.Get(id)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	report, ok := f.(*item.Report)
 	if !ok {
@@ -72,25 +64,18 @@ func TestChildren(t *testing.T) {
 	var repo item.Repository = mem.NewRepository(nodes)
 	root := item.NewFolder("Home", "")
 	rootID, err := repo.Put(root)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
+
 	a := item.NewFolder("IT", rootID)
 	aID, err := repo.Put(a)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	b := item.NewReport("Report", rootID, "<h1>report")
 	bID, err := repo.Put(b)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	f, err := repo.Get(rootID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	folder, ok := f.(*item.Folder)
 	if !ok {

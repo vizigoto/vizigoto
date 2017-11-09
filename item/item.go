@@ -39,6 +39,7 @@ type Repository interface {
 	Put(interface{}) (ID, error)
 }
 
+//Service is the interface that provides the basic Item methods.
 type Service interface {
 	Get(id ID) (interface{}, error)
 	AddFolder(name string, parent ID) (ID, error)
@@ -49,6 +50,7 @@ type service struct {
 	repo Repository
 }
 
+//NewService returns a new instance of the default item Service.
 func NewService(repo Repository) Service {
 	return &service{repo}
 }

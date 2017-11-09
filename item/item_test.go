@@ -6,6 +6,7 @@ import (
 	"github.com/vizigoto/vizigoto/item"
 	"github.com/vizigoto/vizigoto/item/storage/mem"
 	node "github.com/vizigoto/vizigoto/node/storage/mem"
+	"github.com/vizigoto/vizigoto/pkg/testutil"
 )
 
 func TestNewFolder(t *testing.T) {
@@ -33,25 +34,17 @@ func TestService(t *testing.T) {
 
 	rootName, rootParent := "Home", item.ID("")
 	rootID, err := service.AddFolder(rootName, rootParent)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	reportName, reportContent := "report", "<h1>content"
 	reportID, err := service.AddReport(reportName, rootID, reportContent)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	f, err := service.Get(rootID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	r, err := service.Get(reportID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	folder, ok := f.(*item.Folder)
 	if !ok {

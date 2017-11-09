@@ -23,14 +23,10 @@ func TestPutGetFolder(t *testing.T) {
 
 	root := item.NewFolder("Home", "")
 	id, err := repo.Put(root)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	f, err := repo.Get(id)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	folder, ok := f.(*item.Folder)
 	if !ok {
@@ -52,20 +48,14 @@ func TestPutGetReport(t *testing.T) {
 
 	root := item.NewFolder("Home", "")
 	rootID, err := repo.Put(root)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	r := item.NewReport("hr report", rootID, "content")
 	id, err := repo.Put(r)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	result, err := repo.Get(id)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
 
 	report, ok := result.(*item.Report)
 	if !ok {
