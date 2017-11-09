@@ -3,24 +3,22 @@ package node
 import (
 	"time"
 
-	"github.com/vizigoto/vizigoto/pkg/metrics"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 type instrumentingRepository struct {
-	requestCount   metrics.Counter
-	requestLatency metrics.Histogram
+	counter *prometheus.CounterVec
 	Repository
 }
 
 // NewInstrumentingRepository returns an instance of an instrumenting Repository.
-func NewInstrumentingRepository(counter metrics.Counter, latency metrics.Histogram, r Repository) Repository {
-	return &instrumentingRepository{counter, latency, r}
+func NewInstrumentingRepository(c *prometheus.CounterVec, r Repository) Repository {
+	return &instrumentingRepository{c, r}
 }
 
 func (repo *instrumentingRepository) Get(id ID) (*Node, error) {
 	defer func(begin time.Time) {
-		repo.requestCount.With("method", "get").Add(1)
-		repo.requestLatency.With("method", "get").Observe(time.Since(begin).Seconds())
+		repo.counter.With(prometheus.Labels{"method": "get"}).Inc()
 	}(time.Now())
 
 	return repo.Repository.Get(id)
@@ -28,9 +26,8 @@ func (repo *instrumentingRepository) Get(id ID) (*Node, error) {
 
 func (repo *instrumentingRepository) Put(i *Node) (ID, error) {
 	defer func(begin time.Time) {
-		repo.requestCount.With("method", "put").Add(1)
-		repo.requestLatency.With("method", "put").Observe(time.Since(begin).Seconds())
+		repo.counter.With(prometheus.Labels{"method": "put"}).Inc()
 	}(time.Now())
 
-	return repo.Put(i)
+	return repo.Repository.Put(i)
 }

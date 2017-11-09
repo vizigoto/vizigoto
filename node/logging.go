@@ -45,7 +45,7 @@ func (repo *loggingRepository) Put(n *Node) (id ID, err error) {
 		)
 	}(time.Now())
 
-	id, err = repo.Put(n)
+	id, err = repo.Repository.Put(n)
 	return
 }
 
