@@ -4,9 +4,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/go-kit/kit/log"
 	"github.com/vizigoto/vizigoto/node"
 	"github.com/vizigoto/vizigoto/node/storage/mem"
+	"github.com/vizigoto/vizigoto/pkg/log"
 	"github.com/vizigoto/vizigoto/pkg/testutil"
 )
 
