@@ -33,12 +33,13 @@ func (repo *repository) Get(id item.ID) (interface{}, error) {
 		return nil, err
 	}
 
-	if item.Kind(kind) == item.KindFolder {
+	switch item.Kind(kind) {
+	case item.KindFolder:
 		return repo.getFolder(n)
-	}
-	if item.Kind(kind) == item.KindReport {
+	case item.KindReport:
 		return repo.getReport(n)
 	}
+
 	return nil, errors.New("item not found")
 }
 
@@ -78,11 +79,11 @@ func (repo *repository) getReport(n *node.Node) (interface{}, error) {
 }
 
 func (repo *repository) Put(i interface{}) (item.ID, error) {
-	if folder, ok := i.(*item.Folder); ok {
-		return repo.putFolder(folder)
-	}
-	if report, ok := i.(*item.Report); ok {
-		return repo.putReport(report)
+	switch v := i.(type) {
+	case *item.Folder:
+		return repo.putFolder(v)
+	case *item.Report:
+		return repo.putReport(v)
 	}
 	return "", nil
 }

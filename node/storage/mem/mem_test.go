@@ -27,9 +27,8 @@ func TestSimplePutGetFolder(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	i, err := repo.Get(folderID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.FatalOnError(t, err)
+
 	if folder.ID != i.ID {
 		t.Fatal("id error")
 	}
