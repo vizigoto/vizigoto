@@ -7,15 +7,6 @@ package item
 // ID uniquely identifies a particular item.
 type ID string
 
-// Kind of item
-type Kind string
-
-// Kinds of items
-const (
-	KindFolder Kind = "folder"
-	KindReport Kind = "report"
-)
-
 // Folder represents a folder in the content tree.
 type Folder struct {
 	ID       ID

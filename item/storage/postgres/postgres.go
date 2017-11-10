@@ -12,6 +12,15 @@ import (
 	"github.com/vizigoto/vizigoto/node"
 )
 
+// Kind of item
+type kind string
+
+// Kinds of items
+const (
+	folder kind = "folder"
+	report kind = "report"
+)
+
 type repository struct {
 	db    *sql.DB
 	nodes node.Repository
@@ -28,23 +37,23 @@ func (repo *repository) Get(id item.ID) (interface{}, error) {
 		return nil, err
 	}
 
-	kind, err := repo.getItemKind(id)
+	itemKind, err := repo.getItemKind(id)
 	if err != nil {
 		return nil, err
 	}
 
-	switch item.Kind(kind) {
-	case item.KindFolder:
+	switch itemKind {
+	case folder:
 		return repo.getFolder(n)
-	case item.KindReport:
+	case report:
 		return repo.getReport(n)
 	}
 
 	return nil, errors.New("item not found")
 }
 
-func (repo *repository) getItemKind(id item.ID) (kind string, err error) {
-	err = repo.db.QueryRow("select kind from viitems.items where id = $1", id).Scan(&kind)
+func (repo *repository) getItemKind(id item.ID) (k kind, err error) {
+	err = repo.db.QueryRow("select kind from viitems.items where id = $1", id).Scan(&k)
 	if err != nil {
 		return "", err
 	}
@@ -88,7 +97,7 @@ func (repo *repository) Put(i interface{}) (item.ID, error) {
 	return "", nil
 }
 
-func (repo *repository) putFolder(folder *item.Folder) (id item.ID, err error) {
+func (repo *repository) putFolder(f *item.Folder) (id item.ID, err error) {
 	tx, err := repo.db.Begin()
 	if err != nil {
 		return
@@ -101,12 +110,12 @@ func (repo *repository) putFolder(folder *item.Folder) (id item.ID, err error) {
 		err = tx.Commit()
 	}()
 
-	n := node.New(node.ID(folder.Parent))
+	n := node.New(node.ID(f.Parent))
 	nodeID, err := repo.nodes.Put(n)
 	if err != nil {
 		return
 	}
-	_, err = tx.Exec("insert into viitems.items (id, name, kind) values($1, $2, $3)", nodeID, folder.Name, item.KindFolder)
+	_, err = tx.Exec("insert into viitems.items (id, name, kind) values($1, $2, $3)", nodeID, f.Name, folder)
 	if err != nil {
 		return
 	}
@@ -117,7 +126,7 @@ func (repo *repository) putFolder(folder *item.Folder) (id item.ID, err error) {
 	return item.ID(nodeID), nil
 }
 
-func (repo *repository) putReport(report *item.Report) (id item.ID, err error) {
+func (repo *repository) putReport(r *item.Report) (id item.ID, err error) {
 	tx, err := repo.db.Begin()
 	if err != nil {
 		return
@@ -130,16 +139,16 @@ func (repo *repository) putReport(report *item.Report) (id item.ID, err error) {
 		err = tx.Commit()
 	}()
 
-	n := node.New(node.ID(report.Parent))
+	n := node.New(node.ID(r.Parent))
 	nodeID, err := repo.nodes.Put(n)
 	if err != nil {
 		return
 	}
-	_, err = tx.Exec("insert into viitems.items(id, name, kind) values($1, $2, $3)", nodeID, report.Name, item.KindReport)
+	_, err = tx.Exec("insert into viitems.items(id, name, kind) values($1, $2, $3)", nodeID, r.Name, report)
 	if err != nil {
 		return
 	}
-	_, err = tx.Exec("insert into viitems.reports(id, content) values($1, $2)", nodeID, report.Content)
+	_, err = tx.Exec("insert into viitems.reports(id, content) values($1, $2)", nodeID, r.Content)
 	if err != nil {
 		return
 	}
