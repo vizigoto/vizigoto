@@ -66,9 +66,8 @@ func TestInstrumentingService(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	rep, ok := r.(*item.Report)
-	if !ok {
-		t.Fatal("type error")
-	}
+	testutil.FatalNotOK(t, ok, "type error")
+
 	if rep.Name != "report" {
 		t.Fatal("report error")
 	}

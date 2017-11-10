@@ -47,9 +47,7 @@ func TestService(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	folder, ok := f.(*item.Folder)
-	if !ok {
-		t.Fatal("type error")
-	}
+	testutil.FatalNotOK(t, ok, "type error")
 
 	if folder.Name != rootName ||
 		folder.Parent != rootParent {
@@ -57,9 +55,7 @@ func TestService(t *testing.T) {
 	}
 
 	report, ok := r.(*item.Report)
-	if !ok {
-		t.Fatal("type error")
-	}
+	testutil.FatalNotOK(t, ok, "type error")
 
 	if report.Name != reportName ||
 		report.Content != reportContent ||

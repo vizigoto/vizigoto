@@ -9,3 +9,11 @@ func FatalOnError(t *testing.T, err error) {
 		t.Fatal(err)
 	}
 }
+
+//FatalNotOK marks a test as failed if is not ok.
+func FatalNotOK(t *testing.T, ok bool, message string) {
+	t.Helper()
+	if !ok {
+		t.Fatal(message)
+	}
+}

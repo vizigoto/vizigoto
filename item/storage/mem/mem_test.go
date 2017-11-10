@@ -26,9 +26,8 @@ func TestPutGetFolder(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	folder, ok := f.(*item.Folder)
-	if !ok {
-		t.Fatal("type match fail")
-	}
+	testutil.FatalNotOK(t, ok, "type error")
+
 	if folder.Name != name ||
 		folder.Parent != parent {
 		t.Fatal("folder properties error")
@@ -48,9 +47,7 @@ func TestPutGetReport(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	report, ok := f.(*item.Report)
-	if !ok {
-		t.Fatal("type match fail")
-	}
+	testutil.FatalNotOK(t, ok, "type error")
 
 	if report.Name != name ||
 		report.Parent != parent ||
@@ -78,9 +75,7 @@ func TestChildren(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	folder, ok := f.(*item.Folder)
-	if !ok {
-		t.Fatal("type match fail")
-	}
+	testutil.FatalNotOK(t, ok, "type error")
 
 	childrenIDs := []item.ID{aID, bID}
 
