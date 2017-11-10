@@ -14,7 +14,10 @@ import (
 
 func ExampleNode() {
 	repo := mem.NewRepository()
-	no := node.New("")
+
+	parent := node.ID("")
+	no := node.New(parent)
+
 	id, err := repo.Put(no)
 	if err != nil {
 		log.Println(err)

@@ -12,17 +12,20 @@ import (
 func TestInstrumentingRepository(t *testing.T) {
 	counter := prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name:      "name",
-			Namespace: "namespace",
-			Subsystem: "subsystem",
-			Help:      "help.",
+			Namespace: "api",
+			Subsystem: "repository",
+			Name:      "request_count",
+			Help:      "Number of requests received.",
 		},
 		[]string{"method"},
 	)
 
 	repo := mem.NewRepository()
 	repo = node.NewInstrumentingRepository(counter, repo)
-	folder := node.New("")
+
+	parent := node.ID("")
+	folder := node.New(parent)
+
 	folderID, err := repo.Put(folder)
 	testutil.FatalOnError(t, err)
 

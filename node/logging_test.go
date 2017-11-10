@@ -16,7 +16,10 @@ func TestLoggingRepository(t *testing.T) {
 
 	repo := mem.NewRepository()
 	repo = node.NewLoggingRepository(logger, repo)
-	folder := node.New("")
+
+	parent := node.ID("")
+	folder := node.New(parent)
+
 	folderID, err := repo.Put(folder)
 	testutil.FatalOnError(t, err)
 

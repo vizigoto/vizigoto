@@ -22,7 +22,6 @@ func (repo *loggingRepository) Get(id ID) (n *Node, err error) {
 		repo.logger.Log(
 			"method", "get",
 			"id", id,
-			"kind", t.kind,
 			"parent", t.parent,
 			"took", time.Since(begin),
 			"err", err,
@@ -58,6 +57,5 @@ func toFields(n *Node) no {
 
 type no struct {
 	id     string
-	kind   string
 	parent string
 }
