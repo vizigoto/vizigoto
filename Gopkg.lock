@@ -32,6 +32,18 @@
   version = "v1.5.0"
 
 [[projects]]
+  name = "github.com/graphql-go/graphql"
+  packages = [".","gqlerrors","language/ast","language/kinds","language/lexer","language/location","language/parser","language/printer","language/source","language/typeInfo","language/visitor"]
+  revision = "0c7d73fea519ce6751ecb4d5835c5a87a384cf6c"
+  version = "v0.7.3"
+
+[[projects]]
+  name = "github.com/graphql-go/handler"
+  packages = ["."]
+  revision = "f0393b2c10daeebea900292b8e092e73475399d9"
+  version = "v0.2.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/kr/logfmt"
   packages = ["."]
@@ -51,7 +63,7 @@
 
 [[projects]]
   name = "github.com/prometheus/client_golang"
-  packages = ["prometheus"]
+  packages = ["prometheus","prometheus/promhttp"]
   revision = "c5b7fccd204277076155f10851dad72b76a49317"
   version = "v0.8.0"
 
@@ -76,6 +88,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "85fa52f19dc555fc34873ac2776eba5585a7f2ec15660bc84391569a7861d977"
+  inputs-digest = "e423591f600731c6f1b5f7d58d642b73d9ab586100a80d1cb974a654f818bcee"
   solver-name = "gps-cdcl"
   solver-version = 1

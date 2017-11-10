@@ -57,6 +57,7 @@ func (repo *repository) Put(i interface{}) (item.ID, error) {
 		if err != nil {
 			return "", err
 		}
+		folder.ID = item.ID(id)
 		repo.items[item.ID(id)] = folder
 		return item.ID(id), nil
 	}
@@ -68,6 +69,7 @@ func (repo *repository) Put(i interface{}) (item.ID, error) {
 		if err != nil {
 			return "", err
 		}
+		report.ID = item.ID(id)
 		repo.items[item.ID(id)] = report
 		return item.ID(id), nil
 	}
