@@ -6,10 +6,11 @@ package api
 
 import "github.com/graphql-go/graphql"
 
-func getSchema(query *graphql.Object, types []graphql.Type) (*graphql.Schema, error) {
+func getSchema(query *graphql.Object, mutation *graphql.Object, types []graphql.Type) (*graphql.Schema, error) {
 	schema, err := graphql.NewSchema(graphql.SchemaConfig{
-		Query: query,
-		Types: types,
+		Query:    query,
+		Mutation: mutation,
+		Types:    types,
 	})
 
 	if err != nil {

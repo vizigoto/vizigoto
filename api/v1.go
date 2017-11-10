@@ -25,8 +25,10 @@ func NewV1(service item.Service) (http.Handler, error) {
 	itemType := getItemType(folderType, reportType)
 
 	query := v1.getQueryType(folderType, reportType, itemType)
+	mutation := v1.getMutationType(folderType, reportType, itemType)
+
 	types := []graphql.Type{itemType}
-	schema, err := getSchema(query, types)
+	schema, err := getSchema(query, mutation, types)
 	if err != nil {
 		return nil, err
 	}
