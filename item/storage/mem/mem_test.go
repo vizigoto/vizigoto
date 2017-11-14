@@ -17,7 +17,7 @@ func TestPutGetFolder(t *testing.T) {
 	nodes := node.NewRepository()
 	repo := mem.NewRepository(nodes)
 
-	name, parent := "Home", item.ID("")
+	name, parent := "Home", ""
 	root := item.NewFolder(name, parent)
 	rootID, err := repo.Put(root)
 	testutil.FatalOnError(t, err)
@@ -38,7 +38,7 @@ func TestPutGetReport(t *testing.T) {
 	nodes := node.NewRepository()
 	var repo item.Repository = mem.NewRepository(nodes)
 
-	name, parent, content := "Report", item.ID(""), "<h1>report"
+	name, parent, content := "Report", "", "<h1>report"
 	r := item.NewReport(name, parent, content)
 	id, err := repo.Put(r)
 	testutil.FatalOnError(t, err)
@@ -77,7 +77,7 @@ func TestChildren(t *testing.T) {
 	folder, ok := f.(*item.Folder)
 	testutil.FatalNotOK(t, ok, "type error")
 
-	childrenIDs := []item.ID{aID, bID}
+	childrenIDs := []string{aID, bID}
 
 	for _, j := range folder.Children {
 		fail := true

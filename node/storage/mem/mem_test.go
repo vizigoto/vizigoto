@@ -56,7 +56,7 @@ func TestPutGet(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	children := []string{"a", "b", "c", "d"}
-	childrenIDs := []node.ID{}
+	childrenIDs := []string{}
 	for range children {
 		id, err := repo.Put(node.New(rootID))
 		testutil.FatalOnError(t, err)

@@ -31,8 +31,8 @@ func NewRepository(db *sql.DB, nodes node.Repository) item.Repository {
 	return &repository{db, nodes}
 }
 
-func (repo *repository) Get(id item.ID) (interface{}, error) {
-	n, err := repo.nodes.Get(node.ID(id))
+func (repo *repository) Get(id string) (interface{}, error) {
+	n, err := repo.nodes.Get(id)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (repo *repository) Get(id item.ID) (interface{}, error) {
 	return nil, errors.New("item not found")
 }
 
-func (repo *repository) getItemKind(id item.ID) (k kind, err error) {
+func (repo *repository) getItemKind(id string) (k kind, err error) {
 	err = repo.db.QueryRow("select kind from viitems.items where id = $1", id).Scan(&k)
 	if err != nil {
 		return "", err
@@ -62,8 +62,8 @@ func (repo *repository) getItemKind(id item.ID) (k kind, err error) {
 
 func (repo *repository) getFolder(n *node.Node) (interface{}, error) {
 	folder := &item.Folder{}
-	folder.ID = item.ID(n.ID)
-	folder.Parent = item.ID(n.Parent)
+	folder.ID = n.ID
+	folder.Parent = n.Parent
 
 	err := repo.db.QueryRow("select name from viitems.items where id = $1", n.ID).Scan(&folder.Name)
 	if err != nil {
@@ -75,8 +75,8 @@ func (repo *repository) getFolder(n *node.Node) (interface{}, error) {
 
 func (repo *repository) getReport(n *node.Node) (interface{}, error) {
 	report := &item.Report{}
-	report.ID = item.ID(n.ID)
-	report.Parent = item.ID(n.Parent)
+	report.ID = n.ID
+	report.Parent = n.Parent
 
 	if err := repo.db.QueryRow("select name from viitems.items where id = $1", n.ID).Scan(&report.Name); err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (repo *repository) getReport(n *node.Node) (interface{}, error) {
 	return report, nil
 }
 
-func (repo *repository) Put(i interface{}) (item.ID, error) {
+func (repo *repository) Put(i interface{}) (string, error) {
 	switch v := i.(type) {
 	case *item.Folder:
 		return repo.putFolder(v)
@@ -97,7 +97,7 @@ func (repo *repository) Put(i interface{}) (item.ID, error) {
 	return "", nil
 }
 
-func (repo *repository) putFolder(f *item.Folder) (id item.ID, err error) {
+func (repo *repository) putFolder(f *item.Folder) (id string, err error) {
 	tx, err := repo.db.Begin()
 	if err != nil {
 		return
@@ -110,7 +110,7 @@ func (repo *repository) putFolder(f *item.Folder) (id item.ID, err error) {
 		err = tx.Commit()
 	}()
 
-	n := node.New(node.ID(f.Parent))
+	n := node.New(f.Parent)
 	nodeID, err := repo.nodes.Put(n)
 	if err != nil {
 		return
@@ -123,10 +123,10 @@ func (repo *repository) putFolder(f *item.Folder) (id item.ID, err error) {
 	if err != nil {
 		return
 	}
-	return item.ID(nodeID), nil
+	return nodeID, nil
 }
 
-func (repo *repository) putReport(r *item.Report) (id item.ID, err error) {
+func (repo *repository) putReport(r *item.Report) (id string, err error) {
 	tx, err := repo.db.Begin()
 	if err != nil {
 		return
@@ -139,7 +139,7 @@ func (repo *repository) putReport(r *item.Report) (id item.ID, err error) {
 		err = tx.Commit()
 	}()
 
-	n := node.New(node.ID(r.Parent))
+	n := node.New(r.Parent)
 	nodeID, err := repo.nodes.Put(n)
 	if err != nil {
 		return
@@ -152,5 +152,5 @@ func (repo *repository) putReport(r *item.Report) (id item.ID, err error) {
 	if err != nil {
 		return
 	}
-	return item.ID(nodeID), nil
+	return nodeID, nil
 }

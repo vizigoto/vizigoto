@@ -21,7 +21,7 @@ func TestLoggingRepository(t *testing.T) {
 	repo := mem.NewRepository()
 	repo = node.NewLoggingRepository(logger, repo)
 
-	parent := node.ID("")
+	parent := ""
 	folder := node.New(parent)
 
 	folderID, err := repo.Put(folder)

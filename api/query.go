@@ -21,7 +21,7 @@ func (v1 *v1) getQueryType(folderType, reportType *graphql.Object, itemType *gra
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					id := item.ID(p.Args["id"].(string))
+					id := p.Args["id"].(string)
 					i, err := v1.service.Get(id)
 					if err != nil {
 						return nil, err
@@ -40,7 +40,7 @@ func (v1 *v1) getQueryType(folderType, reportType *graphql.Object, itemType *gra
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					id := item.ID(p.Args["id"].(string))
+					id := p.Args["id"].(string)
 					i, err := v1.service.Get(id)
 					if err != nil {
 						return nil, err
@@ -59,7 +59,7 @@ func (v1 *v1) getQueryType(folderType, reportType *graphql.Object, itemType *gra
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					id := item.ID(p.Args["id"].(string))
+					id := p.Args["id"].(string)
 					i, err := v1.service.Get(id)
 					if err != nil {
 						return nil, err

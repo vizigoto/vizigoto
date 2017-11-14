@@ -12,10 +12,10 @@ import (
 	"github.com/vizigoto/vizigoto/node/storage/mem"
 )
 
-func ExampleNode() {
+func ExampleNew() {
 	repo := mem.NewRepository()
 
-	parent := node.ID("")
+	parent := ""
 	no := node.New(parent)
 
 	id, err := repo.Put(no)

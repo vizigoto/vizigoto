@@ -30,7 +30,7 @@ func TestInstrumentingRepository(t *testing.T) {
 	repo := mem.NewRepository(nodes)
 	repo = item.NewInstrumentingRepository(counter, repo)
 
-	name, parent := "Home", item.ID("")
+	name, parent := "Home", ""
 	root := item.NewFolder(name, parent)
 	id, err := repo.Put(root)
 	testutil.FatalOnError(t, err)
@@ -60,7 +60,7 @@ func TestInstrumentingService(t *testing.T) {
 	service := item.NewService(repo)
 	service = item.NewInstrumentingService(counter, service)
 
-	rootID, err := service.AddFolder("Home", item.ID(""))
+	rootID, err := service.AddFolder("Home", "")
 	testutil.FatalOnError(t, err)
 
 	reportID, err := service.AddReport("report", rootID, "report content")

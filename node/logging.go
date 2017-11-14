@@ -20,7 +20,7 @@ func NewLoggingRepository(logger log.Logger, r Repository) Repository {
 	return &loggingRepository{logger, r}
 }
 
-func (repo *loggingRepository) Get(id ID) (n *Node, err error) {
+func (repo *loggingRepository) Get(id string) (n *Node, err error) {
 	defer func(begin time.Time) {
 		t := toFields(n)
 		repo.logger.Log(
@@ -36,7 +36,7 @@ func (repo *loggingRepository) Get(id ID) (n *Node, err error) {
 	return
 }
 
-func (repo *loggingRepository) Put(n *Node) (id ID, err error) {
+func (repo *loggingRepository) Put(n *Node) (id string, err error) {
 	defer func(begin time.Time) {
 		repo.logger.Log(
 			"method", "put",

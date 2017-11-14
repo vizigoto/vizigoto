@@ -5,23 +5,20 @@
 // Package node provides a low level API to handle nodes in a content tree.
 package node
 
-// ID uniquely identifies a particular node.
-type ID string
-
 // Node represents one single node in the content tree.
 type Node struct {
-	ID       ID
-	Parent   ID
-	Children []ID
+	ID       string
+	Parent   string
+	Children []string
 }
 
 // New allocates a node and returns a pointer to it.
-func New(parent ID) *Node {
-	return &Node{Parent: parent, Children: []ID{}}
+func New(parent string) *Node {
+	return &Node{Parent: parent, Children: []string{}}
 }
 
 // Repository provides a limited interface to a storage layer.
 type Repository interface {
-	Get(ID) (*Node, error)
-	Put(*Node) (ID, error)
+	Get(id string) (n *Node, err error)
+	Put(n *Node) (id string, err error)
 }

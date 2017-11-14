@@ -20,7 +20,7 @@ func NewInstrumentingRepository(c *prometheus.CounterVec, r Repository) Reposito
 	return &instrumentingRepository{c, r}
 }
 
-func (repo *instrumentingRepository) Get(id ID) (interface{}, error) {
+func (repo *instrumentingRepository) Get(id string) (interface{}, error) {
 	defer func(begin time.Time) {
 		repo.counter.With(prometheus.Labels{"method": "get"}).Inc()
 	}(time.Now())
@@ -28,7 +28,7 @@ func (repo *instrumentingRepository) Get(id ID) (interface{}, error) {
 	return repo.Repository.Get(id)
 }
 
-func (repo *instrumentingRepository) Put(i interface{}) (ID, error) {
+func (repo *instrumentingRepository) Put(i interface{}) (string, error) {
 	defer func(begin time.Time) {
 		repo.counter.With(prometheus.Labels{"method": "put"}).Inc()
 	}(time.Now())
@@ -46,7 +46,7 @@ func NewInstrumentingService(c *prometheus.CounterVec, s Service) Service {
 	return &instrumentingService{c, s}
 }
 
-func (s *instrumentingService) Get(id ID) (interface{}, error) {
+func (s *instrumentingService) Get(id string) (interface{}, error) {
 	defer func(begin time.Time) {
 		s.counter.With(prometheus.Labels{"method": "get"}).Inc()
 	}(time.Now())
@@ -54,7 +54,7 @@ func (s *instrumentingService) Get(id ID) (interface{}, error) {
 	return s.Service.Get(id)
 }
 
-func (s *instrumentingService) AddFolder(name string, parent ID) (ID, error) {
+func (s *instrumentingService) AddFolder(name, parent string) (string, error) {
 	defer func(begin time.Time) {
 		s.counter.With(prometheus.Labels{"method": "addfolder"}).Inc()
 	}(time.Now())
@@ -62,7 +62,7 @@ func (s *instrumentingService) AddFolder(name string, parent ID) (ID, error) {
 	return s.Service.AddFolder(name, parent)
 }
 
-func (s *instrumentingService) AddReport(name string, parent ID, content string) (ID, error) {
+func (s *instrumentingService) AddReport(name, parent, content string) (string, error) {
 	defer func(begin time.Time) {
 		s.counter.With(prometheus.Labels{"method": "addreport"}).Inc()
 	}(time.Now())

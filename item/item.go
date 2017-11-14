@@ -4,46 +4,43 @@
 
 package item
 
-// ID uniquely identifies a particular item.
-type ID string
-
 // Folder represents a folder in the content tree.
 type Folder struct {
-	ID       ID
+	ID       string
 	Name     string
-	Parent   ID
-	Children []ID
+	Parent   string
+	Children []string
 }
 
 // NewFolder allocates a folder and returns a pointer to it.
-func NewFolder(name string, parent ID) *Folder {
-	return &Folder{Name: name, Parent: parent, Children: []ID{}}
+func NewFolder(name string, parent string) *Folder {
+	return &Folder{Name: name, Parent: parent, Children: []string{}}
 }
 
 // Report represents a report in the content tree.
 type Report struct {
-	ID      ID
+	ID      string
 	Name    string
-	Parent  ID
+	Parent  string
 	Content string
 }
 
 // NewReport allocates a report and returns a pointer to it.
-func NewReport(name string, parent ID, content string) *Report {
+func NewReport(name, parent, content string) *Report {
 	return &Report{Name: name, Parent: parent, Content: content}
 }
 
 // Repository provides a limited interface to a storage layer.
 type Repository interface {
-	Get(ID) (interface{}, error)
-	Put(interface{}) (ID, error)
+	Get(string) (interface{}, error)
+	Put(interface{}) (string, error)
 }
 
 //Service is the interface that provides the basic Item methods.
 type Service interface {
-	Get(id ID) (interface{}, error)
-	AddFolder(name string, parent ID) (ID, error)
-	AddReport(name string, parent ID, content string) (ID, error)
+	Get(id string) (interface{}, error)
+	AddFolder(name, parent string) (string, error)
+	AddReport(name, parent, content string) (string, error)
 }
 
 type service struct {
@@ -55,16 +52,16 @@ func NewService(repo Repository) Service {
 	return &service{repo}
 }
 
-func (s *service) Get(id ID) (interface{}, error) {
+func (s *service) Get(id string) (interface{}, error) {
 	return s.repo.Get(id)
 }
 
-func (s *service) AddFolder(name string, parent ID) (ID, error) {
+func (s *service) AddFolder(name, parent string) (string, error) {
 	folder := NewFolder(name, parent)
 	return s.repo.Put(folder)
 }
 
-func (s *service) AddReport(name string, parent ID, content string) (ID, error) {
+func (s *service) AddReport(name, parent, content string) (string, error) {
 	report := NewReport(name, parent, content)
 	return s.repo.Put(report)
 }

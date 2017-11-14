@@ -14,16 +14,16 @@ import (
 
 type repository struct {
 	mtx   sync.RWMutex
-	nodes map[node.ID]*node.Node
+	nodes map[string]*node.Node
 }
 
 // NewRepository returns an instance of a node repository using an in-memory storage engine.
 // All data will be lost after instance release. Useful for testing purposes.
 func NewRepository() node.Repository {
-	return &repository{nodes: make(map[node.ID]*node.Node)}
+	return &repository{nodes: make(map[string]*node.Node)}
 }
 
-func (repo *repository) Get(id node.ID) (*node.Node, error) {
+func (repo *repository) Get(id string) (*node.Node, error) {
 	repo.mtx.RLock()
 	defer repo.mtx.RUnlock()
 	if i, ok := repo.nodes[id]; ok {
@@ -33,17 +33,17 @@ func (repo *repository) Get(id node.ID) (*node.Node, error) {
 	return nil, errors.New("node not found")
 }
 
-func (repo *repository) Put(i *node.Node) (node.ID, error) {
+func (repo *repository) Put(i *node.Node) (string, error) {
 	repo.mtx.Lock()
 	defer repo.mtx.Unlock()
 	id := uuid.New()
-	i.ID = node.ID(id)
+	i.ID = id
 	repo.nodes[i.ID] = i
 	return i.ID, nil
 }
 
 func (repo *repository) assembleItem(i *node.Node) {
-	i.Children = []node.ID{}
+	i.Children = []string{}
 	for _, v := range repo.nodes {
 		if v.Parent == i.ID {
 			i.Children = append(i.Children, v.ID)

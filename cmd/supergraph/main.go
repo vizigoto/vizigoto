@@ -15,7 +15,7 @@ func main() {
 	repo := mem.NewRepository(nodes)
 	service := item.NewService(repo)
 
-	rootName, rootParent := "Home", item.ID("")
+	rootName, rootParent := "Home", ""
 	rootID, err := service.AddFolder(rootName, rootParent)
 	if err != nil {
 		panic(err)

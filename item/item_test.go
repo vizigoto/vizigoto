@@ -14,7 +14,7 @@ import (
 )
 
 func TestNewFolder(t *testing.T) {
-	name, parent := "Home", item.ID("")
+	name, parent := "Home", ""
 	i := item.NewFolder(name, parent)
 	if i.Name != name ||
 		i.Parent != parent {
@@ -23,7 +23,7 @@ func TestNewFolder(t *testing.T) {
 }
 
 func TestNewReport(t *testing.T) {
-	name, parent, content := "Home", item.ID(""), "<h1>report"
+	name, parent, content := "Home", "", "<h1>report"
 	i := item.NewReport(name, parent, content)
 	if i.Name != name ||
 		i.Parent != parent {
@@ -36,7 +36,7 @@ func TestService(t *testing.T) {
 	repo := mem.NewRepository(nodes)
 	service := item.NewService(repo)
 
-	rootName, rootParent := "Home", item.ID("")
+	rootName, rootParent := "Home", ""
 	rootID, err := service.AddFolder(rootName, rootParent)
 	testutil.FatalOnError(t, err)
 

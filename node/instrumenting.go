@@ -20,7 +20,7 @@ func NewInstrumentingRepository(c *prometheus.CounterVec, r Repository) Reposito
 	return &instrumentingRepository{c, r}
 }
 
-func (repo *instrumentingRepository) Get(id ID) (*Node, error) {
+func (repo *instrumentingRepository) Get(id string) (*Node, error) {
 	defer func(begin time.Time) {
 		repo.counter.With(prometheus.Labels{"method": "get"}).Inc()
 	}(time.Now())
@@ -28,7 +28,7 @@ func (repo *instrumentingRepository) Get(id ID) (*Node, error) {
 	return repo.Repository.Get(id)
 }
 
-func (repo *instrumentingRepository) Put(i *Node) (ID, error) {
+func (repo *instrumentingRepository) Put(i *Node) (string, error) {
 	defer func(begin time.Time) {
 		repo.counter.With(prometheus.Labels{"method": "put"}).Inc()
 	}(time.Now())

@@ -11,7 +11,7 @@ import (
 )
 
 func TestNewFolder(t *testing.T) {
-	parent := node.ID("xyz")
+	parent := "xyz"
 	n := node.New(parent)
 	if n.Parent != parent {
 		t.Fatal("folder error")
@@ -19,7 +19,7 @@ func TestNewFolder(t *testing.T) {
 }
 
 func TestNewReport(t *testing.T) {
-	parent := node.ID("abc")
+	parent := "abc"
 	n := node.New(parent)
 	if n.Parent != parent {
 		t.Fatal("report error")

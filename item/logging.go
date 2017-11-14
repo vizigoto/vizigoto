@@ -20,7 +20,7 @@ func NewLoggingRepository(logger log.Logger, r Repository) Repository {
 	return &loggingRepository{logger, r}
 }
 
-func (repo *loggingRepository) Get(id ID) (i interface{}, err error) {
+func (repo *loggingRepository) Get(id string) (i interface{}, err error) {
 	defer func(begin time.Time) {
 		repo.logger.Log("method", "get", "id", id)
 	}(time.Now())
@@ -29,7 +29,7 @@ func (repo *loggingRepository) Get(id ID) (i interface{}, err error) {
 	return
 }
 
-func (repo *loggingRepository) Put(i interface{}) (id ID, err error) {
+func (repo *loggingRepository) Put(i interface{}) (id string, err error) {
 	defer func(begin time.Time) {
 		repo.logger.Log("method", "put", "id", id)
 	}(time.Now())
@@ -48,7 +48,7 @@ func NewLoggingService(logger log.Logger, s Service) Service {
 	return &loggingService{logger, s}
 }
 
-func (s *loggingService) Get(id ID) (interface{}, error) {
+func (s *loggingService) Get(id string) (interface{}, error) {
 	defer func(begin time.Time) {
 		s.logger.Log("method", "get", "id", id)
 	}(time.Now())
@@ -56,7 +56,7 @@ func (s *loggingService) Get(id ID) (interface{}, error) {
 	return s.Service.Get(id)
 }
 
-func (s *loggingService) AddFolder(name string, parent ID) (ID, error) {
+func (s *loggingService) AddFolder(name, parent string) (string, error) {
 	defer func(begin time.Time) {
 		s.logger.Log("addfolder", "get", "name", name, "parent", parent)
 	}(time.Now())
@@ -64,7 +64,7 @@ func (s *loggingService) AddFolder(name string, parent ID) (ID, error) {
 	return s.Service.AddFolder(name, parent)
 }
 
-func (s *loggingService) AddReport(name string, parent ID, content string) (ID, error) {
+func (s *loggingService) AddReport(name, parent, content string) (string, error) {
 	defer func(begin time.Time) {
 		s.logger.Log("addreport", "get", "name", name, "parent", parent)
 	}(time.Now())

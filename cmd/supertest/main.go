@@ -43,7 +43,7 @@ func main() {
 	service = item.NewInstrumentingService(serviceCounterRepo, service)
 	service = item.NewLoggingService(logger, service)
 
-	rootName, rootParent := "Home", item.ID("")
+	rootName, rootParent := "Home", ""
 	rootID, err := service.AddFolder(rootName, rootParent)
 	if err != nil {
 		panic(err)

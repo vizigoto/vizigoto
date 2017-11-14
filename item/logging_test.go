@@ -23,7 +23,7 @@ func TestLoggingRepository(t *testing.T) {
 	repo := mem.NewRepository(nodes)
 	repo = item.NewLoggingRepository(logger, repo)
 
-	name, parent := "Home", item.ID("")
+	name, parent := "Home", ""
 	root := item.NewFolder(name, parent)
 	id, err := repo.Put(root)
 	testutil.FatalOnError(t, err)
@@ -47,7 +47,7 @@ func TestLoggingService(t *testing.T) {
 	service := item.NewService(repo)
 	service = item.NewLoggingService(logger, service)
 
-	rootID, err := service.AddFolder("Home", item.ID(""))
+	rootID, err := service.AddFolder("Home", "")
 	testutil.FatalOnError(t, err)
 
 	reportID, err := service.AddReport("report", rootID, "report content")

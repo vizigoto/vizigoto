@@ -144,7 +144,7 @@ func TestGet(t *testing.T) {
 		t.Fatal("root properties error")
 	}
 
-	ids := []node.ID{firstID, secondID}
+	ids := []string{firstID, secondID}
 
 	for _, j := range n.Children {
 		fail := true

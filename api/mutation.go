@@ -6,7 +6,6 @@ package api
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/vizigoto/vizigoto/item"
 )
 
 func (v1 *v1) getMutationType(folderType, reportType *graphql.Object, itemType *graphql.Union) *graphql.Object {
@@ -25,7 +24,7 @@ func (v1 *v1) getMutationType(folderType, reportType *graphql.Object, itemType *
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					name, parent := p.Args["name"].(string), p.Args["parent"].(string)
-					id, err := v1.service.AddFolder(name, item.ID(parent))
+					id, err := v1.service.AddFolder(name, parent)
 					if err != nil {
 						return nil, err
 					}
