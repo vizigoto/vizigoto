@@ -34,20 +34,24 @@ func (repo *repository) Get(id string) (*node.Node, error) {
 			parent  sql.NullString
 			childID sql.NullString
 		}
-
-		err := rows.Scan(&r.parent, &r.childID)
+		err = rows.Scan(&r.parent, &r.childID)
 		if err != nil {
 			return nil, err
 		}
-
 		if r.parent.Valid {
 			n.Parent = r.parent.String
 		}
-
 		if r.childID.Valid {
 			n.Children = append(n.Children, r.childID.String)
 		}
 	}
+
+	path, err := repo.path(id)
+	if err != nil {
+		return nil, err
+	}
+
+	n.Path = path
 
 	return n, nil
 }
@@ -126,4 +130,26 @@ func (repo *repository) putSecondChild(n *node.Node, lft int) (id string, err er
 		return "", err
 	}
 	return
+}
+
+func (repo *repository) path(id string) ([]string, error) {
+	rows, err := repo.db.Query(sqlPath, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	paths := []string{}
+
+	for rows.Next() {
+		var id string
+		err := rows.Scan(&id)
+		if err != nil {
+			return nil, err
+		}
+
+		paths = append(paths, id)
+	}
+
+	return paths, nil
 }

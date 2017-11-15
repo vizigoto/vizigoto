@@ -10,11 +10,12 @@ type Node struct {
 	ID       string
 	Parent   string
 	Children []string
+	Path     []string
 }
 
 // New allocates a node and returns a pointer to it.
 func New(parent string) *Node {
-	return &Node{Parent: parent, Children: []string{}}
+	return &Node{Parent: parent, Children: []string{}, Path: []string{}}
 }
 
 // Repository provides a limited interface to a storage layer.

@@ -27,26 +27,36 @@ func (repo *repository) Get(id string) (*node.Node, error) {
 	repo.mtx.RLock()
 	defer repo.mtx.RUnlock()
 	if i, ok := repo.nodes[id]; ok {
-		repo.assembleItem(i)
+		repo.assembleChildren(i)
+		i.Path = repo.path(i.ID)
 		return i, nil
 	}
 	return nil, errors.New("node not found")
 }
 
-func (repo *repository) Put(i *node.Node) (string, error) {
+func (repo *repository) Put(n *node.Node) (string, error) {
 	repo.mtx.Lock()
 	defer repo.mtx.Unlock()
-	id := uuid.New()
-	i.ID = id
-	repo.nodes[i.ID] = i
-	return i.ID, nil
+	n.ID = uuid.New()
+	repo.nodes[n.ID] = n
+	return n.ID, nil
 }
 
-func (repo *repository) assembleItem(i *node.Node) {
-	i.Children = []string{}
+func (repo *repository) assembleChildren(n *node.Node) {
+	n.Children = []string{}
 	for _, v := range repo.nodes {
-		if v.Parent == i.ID {
-			i.Children = append(i.Children, v.ID)
+		if v.Parent == n.ID {
+			n.Children = append(n.Children, v.ID)
 		}
 	}
+}
+
+func (repo *repository) path(id string) []string {
+	n := repo.nodes[id]
+	if n.Parent == "" {
+		return []string{id}
+	}
+	paths := repo.path(n.Parent)
+	paths = append(paths, id)
+	return paths
 }

@@ -14,6 +14,61 @@ import (
 	"github.com/vizigoto/vizigoto/pkg/testutil"
 )
 
+func TestPath(t *testing.T) {
+	db := testutil.GetDB()
+	defer db.Close()
+
+	repo := postgres.NewRepository(db)
+	root := node.New("")
+	rootID, err := repo.Put(root)
+	testutil.FatalOnError(t, err)
+
+	a := node.New(rootID)
+	aID, err := repo.Put(a)
+	testutil.FatalOnError(t, err)
+
+	b := node.New(aID)
+	bID, err := repo.Put(b)
+	testutil.FatalOnError(t, err)
+
+	c := node.New(bID)
+	cID, err := repo.Put(c)
+	testutil.FatalOnError(t, err)
+
+	path := []string{rootID, aID, bID, cID}
+
+	c, err = repo.Get(cID)
+	testutil.FatalOnError(t, err)
+
+	for k, v := range path {
+		if v != c.Path[k] {
+			t.Fatal("path error")
+		}
+	}
+
+	path = []string{rootID, aID, bID}
+
+	c, err = repo.Get(bID)
+	testutil.FatalOnError(t, err)
+
+	for k, v := range path {
+		if v != c.Path[k] {
+			t.Fatal("path error")
+		}
+	}
+}
+
+func TestItemNotFound(t *testing.T) {
+	db := testutil.GetDB()
+	defer db.Close()
+
+	repo := postgres.NewRepository(db)
+	_, err := repo.Get("abc")
+	if err == nil {
+		t.Fatal("error expected")
+	}
+}
+
 func TestGetChild(t *testing.T) {
 	db := testutil.GetDB()
 	defer db.Close()

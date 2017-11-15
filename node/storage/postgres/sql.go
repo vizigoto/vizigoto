@@ -14,3 +14,13 @@ from      vinodes.nodes parent
 left join vinodes.nodes child
 on        (parent.id = child.parent)
 where parent.id = $1`
+
+const sqlPath = `
+select   parent.id
+from     vinodes.nodes parent,
+         vinodes.nodes node
+where    node.lft >= parent.lft
+and      node.rgt <= parent.rgt
+and      node.id = $1
+order by parent.lft
+`
