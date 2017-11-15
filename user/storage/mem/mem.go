@@ -14,16 +14,16 @@ import (
 
 type repository struct {
 	mtx   sync.RWMutex
-	users map[user.ID]*user.User
+	users map[string]*user.User
 }
 
 // NewRepository returns an instance of a user repository using an in-memory storage engine.
 // All data will be lost after instance release. Useful for testing purposes.
 func NewRepository() user.Repository {
-	return &repository{users: make(map[user.ID]*user.User)}
+	return &repository{users: make(map[string]*user.User)}
 }
 
-func (repo *repository) Get(id user.ID) (*user.User, error) {
+func (repo *repository) Get(id string) (*user.User, error) {
 	repo.mtx.RLock()
 	defer repo.mtx.RUnlock()
 	if i, ok := repo.users[id]; ok {
@@ -32,11 +32,10 @@ func (repo *repository) Get(id user.ID) (*user.User, error) {
 	return nil, errors.New("user not found")
 }
 
-func (repo *repository) Put(i *user.User) (user.ID, error) {
+func (repo *repository) Put(i *user.User) (string, error) {
 	repo.mtx.Lock()
 	defer repo.mtx.Unlock()
-	id := uuid.New()
-	i.ID = user.ID(id)
+	i.ID = uuid.New()
 	repo.users[i.ID] = i
 	return i.ID, nil
 }

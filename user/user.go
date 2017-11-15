@@ -4,12 +4,9 @@
 
 package user
 
-// ID uniquely identifies a particular user.
-type ID string
-
 // User represents one single user.
 type User struct {
-	ID   ID
+	ID   string
 	Name string
 }
 
@@ -20,6 +17,6 @@ func New(name string) *User {
 
 // Repository provides a limited interface to a storage layer.
 type Repository interface {
-	Get(ID) (*User, error)
-	Put(*User) (ID, error)
+	Get(id string) (user *User, err error)
+	Put(user *User) (id string, err error)
 }

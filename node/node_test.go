@@ -10,18 +10,10 @@ import (
 	"github.com/vizigoto/vizigoto/node"
 )
 
-func TestNewFolder(t *testing.T) {
+func TestNewNode(t *testing.T) {
 	parent := "xyz"
 	n := node.New(parent)
 	if n.Parent != parent {
 		t.Fatal("folder error")
-	}
-}
-
-func TestNewReport(t *testing.T) {
-	parent := "abc"
-	n := node.New(parent)
-	if n.Parent != parent {
-		t.Fatal("report error")
 	}
 }
