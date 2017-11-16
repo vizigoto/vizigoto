@@ -17,10 +17,10 @@ func getItemType(folderType, reportType *graphql.Object) *graphql.Union {
 			reportType, folderType,
 		},
 		ResolveType: func(p graphql.ResolveTypeParams) *graphql.Object {
-			if _, ok := p.Value.(*item.Folder); ok {
+			if _, ok := p.Value.(item.Folder); ok {
 				return folderType
 			}
-			if _, ok := p.Value.(*item.Report); ok {
+			if _, ok := p.Value.(item.Report); ok {
 				return reportType
 			}
 			return nil

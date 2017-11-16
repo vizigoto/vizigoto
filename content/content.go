@@ -11,6 +11,7 @@ import (
 
 //Service is the interface that provides the content methods.
 type Service interface {
+	GetHome() (item.Folder, error)
 	GetItem(id string) (interface{}, error)
 	AddFolder(name, parent string) (string, error)
 	AddReport(name, parent, content string) (string, error)
@@ -20,13 +21,25 @@ type Service interface {
 }
 
 type service struct {
-	items item.Service
-	users user.Service
+	homeID string
+	items  item.Service
+	users  user.Service
 }
 
 // NewService returns an instance of an content Service.
-func NewService(items item.Service, users user.Service) Service {
-	return &service{items, users}
+func NewService(homeID string, items item.Service, users user.Service) Service {
+	return &service{homeID, items, users}
+}
+
+func (s *service) GetHome() (item.Folder, error) {
+	i, err := s.items.Get(s.homeID)
+	if err != nil {
+		return item.Folder{}, nil
+	}
+	if h, ok := i.(item.Folder); ok {
+		return h, nil
+	}
+	panic("home is not a folder")
 }
 
 func (s *service) GetItem(id string) (interface{}, error) {

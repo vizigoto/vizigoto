@@ -19,8 +19,6 @@ func main() {
 	userRepo := mem.NewUserRepository()
 	users := user.NewService(userRepo)
 
-	content := content.NewService(items, users)
-
 	rootName, rootParent := "Home", ""
 	rootID, err := items.AddFolder(rootName, rootParent)
 	if err != nil {
@@ -35,6 +33,7 @@ func main() {
 	}
 	log.Println(reportID)
 
+	content := content.NewService(rootID, items, users)
 	v1Handler, err := api.NewV1(content)
 	if err != nil {
 		panic(err)

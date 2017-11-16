@@ -17,14 +17,17 @@ type v1 struct {
 }
 
 // NewV1 returns a http.Handler which serves the v1 graphql api.
-func NewV1(service content.Service) (http.Handler, error) {
-	v1 := &v1{service}
+func NewV1(content content.Service) (http.Handler, error) {
+	v1 := &v1{content}
 
-	folderType := getFolderType()
-	reportType := getReportType()
+	pathType := getPathType()
+	permissionType := getPermissionType()
+	folderType := getFolderType(pathType, permissionType)
+	reportType := getReportType(pathType, permissionType)
+	userType := getUserType()
 	itemType := getItemType(folderType, reportType)
 
-	query := v1.getQueryType(folderType, reportType, itemType)
+	query := v1.getQueryType(folderType, reportType, userType, itemType)
 	mutation := v1.getMutationType(folderType, reportType, itemType)
 
 	types := []graphql.Type{itemType}
