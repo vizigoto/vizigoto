@@ -7,7 +7,8 @@
 // The location of an item in the content tree is stored using the node package.
 package item
 
-type PathItem interface {
+// Path is an item in the path to the node.
+type Path interface {
 	PathID() string
 	PathName() string
 }
@@ -18,18 +19,20 @@ type Folder struct {
 	Name     string
 	Parent   string
 	Children []interface{}
-	Path     []PathItem
+	Path     []Path
 }
 
 // NewFolder allocates a folder and returns a pointer to it.
 func NewFolder(name string, parent string) Folder {
-	return Folder{Name: name, Parent: parent, Children: []interface{}{}, Path: []PathItem{}}
+	return Folder{Name: name, Parent: parent, Children: []interface{}{}, Path: []Path{}}
 }
 
+// PathID returns the id of the item in the path to the node.
 func (f Folder) PathID() string {
 	return f.ID
 }
 
+// PathName returns the name of the item in the path to the node.
 func (f Folder) PathName() string {
 	return f.Name
 }
@@ -40,7 +43,7 @@ type Report struct {
 	Name    string
 	Parent  string
 	Content string
-	Path    []PathItem
+	Path    []Path
 }
 
 // NewReport allocates a report and returns a pointer to it.
@@ -48,10 +51,12 @@ func NewReport(name, parent, content string) Report {
 	return Report{Name: name, Parent: parent, Content: content}
 }
 
+// PathID returns the id of the item in the path to the node.
 func (r Report) PathID() string {
 	return r.ID
 }
 
+// PathName returns the name of the item in the path to the node.
 func (r Report) PathName() string {
 	return r.Name
 }

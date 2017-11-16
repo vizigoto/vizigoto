@@ -6,25 +6,45 @@ package content
 
 import (
 	"github.com/vizigoto/vizigoto/item"
+	"github.com/vizigoto/vizigoto/user"
 )
 
-type contentService struct {
-	item.Service
+//Service is the interface that provides the content methods.
+type Service interface {
+	GetItem(id string) (interface{}, error)
+	AddFolder(name, parent string) (string, error)
+	AddReport(name, parent, content string) (string, error)
+
+	GetUser(id string) (user.User, error)
+	AddUser(name string) (id string, err error)
+}
+
+type service struct {
+	items item.Service
+	users user.Service
 }
 
 // NewContentService returns an instance of an content Service.
-func NewContentService(s item.Service) item.Service {
-	return &contentService{s}
+func NewContentService(items item.Service, users user.Service) Service {
+	return &service{items, users}
 }
 
-func (s *contentService) Get(id string) (interface{}, error) {
-	return s.Service.Get(id)
+func (s *service) GetItem(id string) (interface{}, error) {
+	return s.items.Get(id)
 }
 
-func (s *contentService) AddFolder(name, parent string) (string, error) {
-	return s.Service.AddFolder(name, parent)
+func (s *service) AddFolder(name, parent string) (string, error) {
+	return s.items.AddFolder(name, parent)
 }
 
-func (s *contentService) AddReport(name, parent, content string) (string, error) {
-	return s.Service.AddReport(name, parent, content)
+func (s *service) AddReport(name, parent, content string) (string, error) {
+	return s.items.AddReport(name, parent, content)
+}
+
+func (s *service) GetUser(id string) (user.User, error) {
+	return s.users.Get(id)
+}
+
+func (s *service) AddUser(name string) (string, error) {
+	return s.users.AddUser(name)
 }

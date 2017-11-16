@@ -7,13 +7,13 @@ package mem_test
 import (
 	"testing"
 
+	"github.com/vizigoto/vizigoto/mem"
 	"github.com/vizigoto/vizigoto/pkg/testutil"
 	"github.com/vizigoto/vizigoto/user"
-	"github.com/vizigoto/vizigoto/user/storage/mem"
 )
 
 func TestUserNotFound(t *testing.T) {
-	repo := mem.NewRepository()
+	repo := mem.NewUserRepository()
 
 	_, err := repo.Get("abc")
 	if err == nil {
@@ -25,7 +25,7 @@ func TestSimplePutGetUser(t *testing.T) {
 	name := "Maria"
 	userMaria := user.New(name)
 
-	repo := mem.NewRepository()
+	repo := mem.NewUserRepository()
 
 	userID, err := repo.Put(userMaria)
 	testutil.FatalOnError(t, err)

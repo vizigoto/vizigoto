@@ -81,8 +81,8 @@ func (repo *itemRepository) Put(i interface{}) (string, error) {
 	panic("type error")
 }
 
-func (repo *itemRepository) assemblePath(n node.Node) []item.PathItem {
-	paths := []item.PathItem{}
+func (repo *itemRepository) assemblePath(n node.Node) []item.Path {
+	paths := []item.Path{}
 	for _, v := range n.Path {
 		if i, ok := repo.items[v.ID]; ok {
 			switch el := i.(type) {

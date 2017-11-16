@@ -66,3 +66,48 @@ func TestService(t *testing.T) {
 		t.Fatal("report error")
 	}
 }
+
+func TestPathInterface(t *testing.T) {
+	nodes := mem.NewNodeRepository()
+	repo := mem.NewItemRepository(nodes)
+	service := item.NewService(repo)
+
+	rootName, rootParent := "Home", ""
+	rootID, err := service.AddFolder(rootName, rootParent)
+	testutil.FatalOnError(t, err)
+	rootItem, err := service.Get(rootID)
+	testutil.FatalOnError(t, err)
+	root := rootItem.(item.Folder)
+
+	aName, aParent := "a", rootID
+	aID, err := service.AddFolder(aName, aParent)
+	testutil.FatalOnError(t, err)
+	aItem, err := service.Get(aID)
+	testutil.FatalOnError(t, err)
+	a := aItem.(item.Folder)
+
+	bName, bParent := "b", aID
+	bID, err := service.AddFolder(bName, bParent)
+	testutil.FatalOnError(t, err)
+	bItem, err := service.Get(bID)
+	testutil.FatalOnError(t, err)
+	b := bItem.(item.Folder)
+
+	cName, cParent, cContent := "c", bID, "content"
+	cID, err := service.AddReport(cName, cParent, cContent)
+	testutil.FatalOnError(t, err)
+	cItem, err := service.Get(cID)
+	testutil.FatalOnError(t, err)
+	c := cItem.(item.Report)
+
+	pathToReport := []item.Path{root, a, b, c}
+
+	for k, _ := range pathToReport {
+		if pathToReport[k].PathID() != c.Path[k].PathID() {
+			t.Fatal("path error")
+		}
+		if pathToReport[k].PathName() != c.Path[k].PathName() {
+			t.Fatal("path error")
+		}
+	}
+}
