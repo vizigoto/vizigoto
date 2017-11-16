@@ -4,17 +4,33 @@
 
 package item
 
+type Path []PathItem
+
+type PathItem interface {
+	PathID() string
+	PathName() string
+}
+
 // Folder represents a folder in the content tree.
 type Folder struct {
 	ID       string
 	Name     string
 	Parent   string
-	Children []string
+	Children []interface{}
+	Path     Path
 }
 
 // NewFolder allocates a folder and returns a pointer to it.
 func NewFolder(name string, parent string) *Folder {
-	return &Folder{Name: name, Parent: parent, Children: []string{}}
+	return &Folder{Name: name, Parent: parent, Children: []interface{}{}, Path: Path{}}
+}
+
+func (f Folder) PathID() string {
+	return f.ID
+}
+
+func (f Folder) PathName() string {
+	return f.Name
 }
 
 // Report represents a report in the content tree.
@@ -23,11 +39,20 @@ type Report struct {
 	Name    string
 	Parent  string
 	Content string
+	Path    Path
 }
 
 // NewReport allocates a report and returns a pointer to it.
 func NewReport(name, parent, content string) *Report {
 	return &Report{Name: name, Parent: parent, Content: content}
+}
+
+func (r Report) PathID() string {
+	return r.ID
+}
+
+func (r Report) PathName() string {
+	return r.Name
 }
 
 // Repository provides a limited interface to a storage layer.

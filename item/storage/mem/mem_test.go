@@ -13,6 +13,60 @@ import (
 	"github.com/vizigoto/vizigoto/pkg/testutil"
 )
 
+func TestPath(t *testing.T) {
+	nodes := node.NewRepository()
+	repo := mem.NewRepository(nodes)
+
+	name, parent := "Home", ""
+	root := item.NewFolder(name, parent)
+	rootID, err := repo.Put(root)
+	testutil.FatalOnError(t, err)
+
+	a := item.NewFolder("a", rootID)
+	aID, err := repo.Put(a)
+	testutil.FatalOnError(t, err)
+
+	b := item.NewFolder("b", aID)
+	bID, err := repo.Put(b)
+	testutil.FatalOnError(t, err)
+
+	c := item.NewFolder("c", bID)
+	cID, err := repo.Put(c)
+	testutil.FatalOnError(t, err)
+
+	pathIDs := []string{rootID, aID, bID, cID}
+	pathNames := []string{root.Name, a.Name, b.Name, c.Name}
+
+	cg, err := repo.Get(cID)
+	testutil.FatalOnError(t, err)
+	cf := cg.(*item.Folder)
+
+	for k, _ := range pathIDs {
+		if pathIDs[k] != cf.Path[k].PathID() {
+			t.Fatal("path id error")
+		}
+		if pathNames[k] != cf.Path[k].PathName() {
+			t.Fatal("path name error")
+		}
+	}
+
+	pathIDs = []string{rootID, aID, bID}
+	pathNames = []string{root.Name, a.Name, b.Name}
+
+	cg, err = repo.Get(cID)
+	testutil.FatalOnError(t, err)
+	cf = cg.(*item.Folder)
+
+	for k, _ := range pathIDs {
+		if pathIDs[k] != cf.Path[k].PathID() {
+			t.Fatal("path id error")
+		}
+		if pathNames[k] != cf.Path[k].PathName() {
+			t.Fatal("path name error")
+		}
+	}
+}
+
 func TestPutGetFolder(t *testing.T) {
 	nodes := node.NewRepository()
 	repo := mem.NewRepository(nodes)

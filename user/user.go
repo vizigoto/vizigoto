@@ -15,7 +15,7 @@ func New(name string) *User {
 	return &User{Name: name}
 }
 
-// Repository provides a limited interface to a storage layer.
+// Repository provides a limited interface to a user storage layer.
 type Repository interface {
 	Get(id string) (user *User, err error)
 	Put(user *User) (id string, err error)

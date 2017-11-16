@@ -13,7 +13,7 @@ import (
 )
 
 type repository struct {
-	mtx   sync.RWMutex
+	sync.RWMutex
 	items map[string]interface{}
 	nodes node.Repository
 }
@@ -24,22 +24,26 @@ func NewRepository(nodes node.Repository) item.Repository {
 }
 
 func (repo *repository) Get(id string) (interface{}, error) {
-	repo.mtx.RLock()
-	defer repo.mtx.RUnlock()
+	repo.RLock()
+	defer repo.RUnlock()
 
 	n, err := repo.nodes.Get(id)
 	if err != nil {
 		return nil, err
 	}
 
+	path := repo.assemblePath(n)
+
 	if i, ok := repo.items[id]; ok {
 		if folder, ok := i.(*item.Folder); ok {
 			for _, c := range n.Children {
 				folder.Children = append(folder.Children, c)
 			}
+			folder.Path = path
 			return folder, nil
 		}
 		if report, ok := i.(*item.Report); ok {
+			report.Path = path
 			return report, nil
 		}
 	}
@@ -47,8 +51,8 @@ func (repo *repository) Get(id string) (interface{}, error) {
 }
 
 func (repo *repository) Put(i interface{}) (string, error) {
-	repo.mtx.Lock()
-	defer repo.mtx.Unlock()
+	repo.Lock()
+	defer repo.Unlock()
 
 	folder, ok := i.(*item.Folder)
 	if ok {
@@ -75,4 +79,19 @@ func (repo *repository) Put(i interface{}) (string, error) {
 	}
 
 	panic("type error")
+}
+
+func (repo *repository) assemblePath(n *node.Node) item.Path {
+	paths := item.Path{}
+	for _, v := range n.Path {
+		if i, ok := repo.items[v.PathID()]; ok {
+			switch el := i.(type) {
+			case *item.Folder:
+				paths = append(paths, el)
+			case *item.Report:
+				paths = append(paths, el)
+			}
+		}
+	}
+	return paths
 }

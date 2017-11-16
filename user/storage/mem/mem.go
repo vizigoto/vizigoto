@@ -13,7 +13,7 @@ import (
 )
 
 type repository struct {
-	mtx   sync.RWMutex
+	sync.RWMutex
 	users map[string]*user.User
 }
 
@@ -24,8 +24,8 @@ func NewRepository() user.Repository {
 }
 
 func (repo *repository) Get(id string) (*user.User, error) {
-	repo.mtx.RLock()
-	defer repo.mtx.RUnlock()
+	repo.RLock()
+	defer repo.RUnlock()
 	if i, ok := repo.users[id]; ok {
 		return i, nil
 	}
@@ -33,8 +33,8 @@ func (repo *repository) Get(id string) (*user.User, error) {
 }
 
 func (repo *repository) Put(i *user.User) (string, error) {
-	repo.mtx.Lock()
-	defer repo.mtx.Unlock()
+	repo.Lock()
+	defer repo.Unlock()
 	i.ID = uuid.New()
 	repo.users[i.ID] = i
 	return i.ID, nil

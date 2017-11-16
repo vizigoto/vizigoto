@@ -13,7 +13,7 @@ import (
 )
 
 type repository struct {
-	mtx   sync.RWMutex
+	sync.RWMutex
 	nodes map[string]*node.Node
 }
 
@@ -24,8 +24,8 @@ func NewRepository() node.Repository {
 }
 
 func (repo *repository) Get(id string) (*node.Node, error) {
-	repo.mtx.RLock()
-	defer repo.mtx.RUnlock()
+	repo.RLock()
+	defer repo.RUnlock()
 	if i, ok := repo.nodes[id]; ok {
 		repo.assembleChildren(i)
 		i.Path = repo.path(i.ID)
@@ -35,11 +35,19 @@ func (repo *repository) Get(id string) (*node.Node, error) {
 }
 
 func (repo *repository) Put(n *node.Node) (string, error) {
-	repo.mtx.Lock()
-	defer repo.mtx.Unlock()
+	repo.Lock()
+	defer repo.Unlock()
 	n.ID = uuid.New()
 	repo.nodes[n.ID] = n
 	return n.ID, nil
+}
+
+func (repo *repository) Move(n *node.Node, parent string) error {
+	repo.Lock()
+	defer repo.Unlock()
+	n.Parent = parent
+	repo.nodes[n.ID] = n
+	return nil
 }
 
 func (repo *repository) assembleChildren(n *node.Node) {
@@ -51,12 +59,12 @@ func (repo *repository) assembleChildren(n *node.Node) {
 	}
 }
 
-func (repo *repository) path(id string) []string {
+func (repo *repository) path(id string) node.Path {
 	n := repo.nodes[id]
 	if n.Parent == "" {
-		return []string{id}
+		return []node.PathNode{n}
 	}
 	paths := repo.path(n.Parent)
-	paths = append(paths, id)
+	paths = append(paths, n)
 	return paths
 }

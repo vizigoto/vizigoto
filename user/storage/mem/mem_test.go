@@ -12,7 +12,7 @@ import (
 	"github.com/vizigoto/vizigoto/user/storage/mem"
 )
 
-func TestItemNotFound(t *testing.T) {
+func TestUserNotFound(t *testing.T) {
 	repo := mem.NewRepository()
 
 	_, err := repo.Get("abc")

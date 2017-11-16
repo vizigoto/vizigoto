@@ -36,7 +36,7 @@ func TestPath(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	for k, v := range path {
-		if v != c.Path[k] {
+		if v != c.Path[k].PathID() {
 			t.Fatal("path error")
 		}
 	}
@@ -47,13 +47,13 @@ func TestPath(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	for k, v := range path {
-		if v != c.Path[k] {
+		if v != c.Path[k].PathID() {
 			t.Fatal("path error")
 		}
 	}
 }
 
-func TestItemNotFound(t *testing.T) {
+func TestNodeNotFound(t *testing.T) {
 	repo := mem.NewRepository()
 	_, err := repo.Get("abc")
 	if err == nil {
@@ -61,22 +61,8 @@ func TestItemNotFound(t *testing.T) {
 	}
 }
 
-func TestSimplePutGet(t *testing.T) {
-	repo := mem.NewRepository()
-	folder := node.New("")
-	folderID, err := repo.Put(folder)
-	testutil.FatalOnError(t, err)
-
-	i, err := repo.Get(folderID)
-	testutil.FatalOnError(t, err)
-
-	if folder.ID != i.ID {
-		t.Fatal("id error")
-	}
-}
-
 func TestPutGet(t *testing.T) {
-	var repo node.Repository = mem.NewRepository()
+	repo := mem.NewRepository()
 
 	root := node.New("")
 	rootID, err := repo.Put(root)
@@ -103,6 +89,46 @@ func TestPutGet(t *testing.T) {
 		}
 		if fail {
 			t.Fatal("children not found")
+		}
+	}
+}
+
+func TestMove(t *testing.T) {
+	repo := mem.NewRepository()
+
+	root := node.New("")
+	rootID, err := repo.Put(root)
+	testutil.FatalOnError(t, err)
+
+	a := node.New(rootID)
+	aID, err := repo.Put(a)
+	testutil.FatalOnError(t, err)
+
+	b := node.New(rootID)
+	bID, err := repo.Put(b)
+	testutil.FatalOnError(t, err)
+
+	c := node.New(aID)
+	cID, err := repo.Put(c)
+	testutil.FatalOnError(t, err)
+	c, err = repo.Get(cID)
+	testutil.FatalOnError(t, err)
+
+	pathToC := []string{rootID, aID, cID}
+	for k, v := range pathToC {
+		if v != c.Path[k].PathID() {
+			t.Fatal("path error")
+		}
+	}
+
+	repo.Move(c, bID)
+	pathToC = []string{rootID, bID, cID}
+	c, err = repo.Get(cID)
+	testutil.FatalOnError(t, err)
+
+	for k, v := range pathToC {
+		if v != c.Path[k].PathID() {
+			t.Fatal("path error")
 		}
 	}
 }
