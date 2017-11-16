@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD 3-Clause License
 // license that can be found in the LICENSE file.
 
+// Package item provides a hight level API to handle items in a content tree.
+//
+// The location of an item in the content tree is stored using the node package.
 package item
-
-type Path []PathItem
 
 type PathItem interface {
 	PathID() string
@@ -17,12 +18,12 @@ type Folder struct {
 	Name     string
 	Parent   string
 	Children []interface{}
-	Path     Path
+	Path     []PathItem
 }
 
 // NewFolder allocates a folder and returns a pointer to it.
-func NewFolder(name string, parent string) *Folder {
-	return &Folder{Name: name, Parent: parent, Children: []interface{}{}, Path: Path{}}
+func NewFolder(name string, parent string) Folder {
+	return Folder{Name: name, Parent: parent, Children: []interface{}{}, Path: []PathItem{}}
 }
 
 func (f Folder) PathID() string {
@@ -39,12 +40,12 @@ type Report struct {
 	Name    string
 	Parent  string
 	Content string
-	Path    Path
+	Path    []PathItem
 }
 
 // NewReport allocates a report and returns a pointer to it.
-func NewReport(name, parent, content string) *Report {
-	return &Report{Name: name, Parent: parent, Content: content}
+func NewReport(name, parent, content string) Report {
+	return Report{Name: name, Parent: parent, Content: content}
 }
 
 func (r Report) PathID() string {

@@ -38,7 +38,7 @@ func TestItemPath(t *testing.T) {
 
 	cg, err := repo.Get(cID)
 	testutil.FatalOnError(t, err)
-	cf := cg.(*item.Folder)
+	cf := cg.(item.Folder)
 
 	for k, _ := range pathIDs {
 		if pathIDs[k] != cf.Path[k].PathID() {
@@ -54,7 +54,7 @@ func TestItemPath(t *testing.T) {
 
 	cg, err = repo.Get(cID)
 	testutil.FatalOnError(t, err)
-	cf = cg.(*item.Folder)
+	cf = cg.(item.Folder)
 
 	for k, _ := range pathIDs {
 		if pathIDs[k] != cf.Path[k].PathID() {
@@ -78,7 +78,7 @@ func TestPutGetFolder(t *testing.T) {
 	f, err := repo.Get(rootID)
 	testutil.FatalOnError(t, err)
 
-	folder, ok := f.(*item.Folder)
+	folder, ok := f.(item.Folder)
 	testutil.FatalNotOK(t, ok, "type error")
 
 	if folder.Name != name ||
@@ -99,7 +99,7 @@ func TestPutGetReport(t *testing.T) {
 	f, err := repo.Get(id)
 	testutil.FatalOnError(t, err)
 
-	report, ok := f.(*item.Report)
+	report, ok := f.(item.Report)
 	testutil.FatalNotOK(t, ok, "type error")
 
 	if report.Name != name ||
@@ -128,7 +128,7 @@ func TestChildren(t *testing.T) {
 	f, err := repo.Get(rootID)
 	testutil.FatalOnError(t, err)
 
-	folder, ok := f.(*item.Folder)
+	folder, ok := f.(item.Folder)
 	testutil.FatalNotOK(t, ok, "type error")
 
 	childrenIDs := []string{aID, bID}

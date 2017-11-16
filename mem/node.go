@@ -14,16 +14,16 @@ import (
 
 type nodeRepository struct {
 	sync.RWMutex
-	nodes map[string]*node.Node
+	nodes map[string]node.Node
 }
 
 // NewNodeRepository returns an instance of a node repository using an in-memory storage engine.
 // All data will be lost after instance release. Useful for testing purposes.
 func NewNodeRepository() node.Repository {
-	return &nodeRepository{nodes: make(map[string]*node.Node)}
+	return &nodeRepository{nodes: make(map[string]node.Node)}
 }
 
-func (repo *nodeRepository) Get(id string) (*node.Node, error) {
+func (repo *nodeRepository) Get(id string) (node.Node, error) {
 	repo.RLock()
 	defer repo.RUnlock()
 	if i, ok := repo.nodes[id]; ok {
@@ -31,10 +31,10 @@ func (repo *nodeRepository) Get(id string) (*node.Node, error) {
 		i.Path = repo.path(i.ID)
 		return i, nil
 	}
-	return nil, errors.New("node not found")
+	return node.Node{}, errors.New("node not found")
 }
 
-func (repo *nodeRepository) Put(n *node.Node) (string, error) {
+func (repo *nodeRepository) Put(n node.Node) (string, error) {
 	repo.Lock()
 	defer repo.Unlock()
 	n.ID = uuid.New()
@@ -42,7 +42,7 @@ func (repo *nodeRepository) Put(n *node.Node) (string, error) {
 	return n.ID, nil
 }
 
-func (repo *nodeRepository) Move(n *node.Node, parent string) error {
+func (repo *nodeRepository) Move(n node.Node, parent string) error {
 	repo.Lock()
 	defer repo.Unlock()
 	n.Parent = parent
@@ -50,7 +50,7 @@ func (repo *nodeRepository) Move(n *node.Node, parent string) error {
 	return nil
 }
 
-func (repo *nodeRepository) assembleChildren(n *node.Node) {
+func (repo *nodeRepository) assembleChildren(n node.Node) {
 	n.Children = []string{}
 	for _, v := range repo.nodes {
 		if v.Parent == n.ID {
@@ -59,10 +59,10 @@ func (repo *nodeRepository) assembleChildren(n *node.Node) {
 	}
 }
 
-func (repo *nodeRepository) path(id string) node.Path {
+func (repo *nodeRepository) path(id string) []node.Node {
 	n := repo.nodes[id]
 	if n.Parent == "" {
-		return []node.PathNode{n}
+		return []node.Node{n}
 	}
 	paths := repo.path(n.Parent)
 	paths = append(paths, n)

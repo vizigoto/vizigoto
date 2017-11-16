@@ -35,14 +35,14 @@ func (repo *itemRepository) Get(id string) (interface{}, error) {
 	path := repo.assemblePath(n)
 
 	if i, ok := repo.items[id]; ok {
-		if folder, ok := i.(*item.Folder); ok {
+		if folder, ok := i.(item.Folder); ok {
 			for _, c := range n.Children {
 				folder.Children = append(folder.Children, c)
 			}
 			folder.Path = path
 			return folder, nil
 		}
-		if report, ok := i.(*item.Report); ok {
+		if report, ok := i.(item.Report); ok {
 			report.Path = path
 			return report, nil
 		}
@@ -54,7 +54,7 @@ func (repo *itemRepository) Put(i interface{}) (string, error) {
 	repo.Lock()
 	defer repo.Unlock()
 
-	folder, ok := i.(*item.Folder)
+	folder, ok := i.(item.Folder)
 	if ok {
 		n := node.New(folder.Parent)
 		id, err := repo.nodes.Put(n)
@@ -66,7 +66,7 @@ func (repo *itemRepository) Put(i interface{}) (string, error) {
 		return id, nil
 	}
 
-	report, ok := i.(*item.Report)
+	report, ok := i.(item.Report)
 	if ok {
 		n := node.New(report.Parent)
 		id, err := repo.nodes.Put(n)
@@ -81,14 +81,14 @@ func (repo *itemRepository) Put(i interface{}) (string, error) {
 	panic("type error")
 }
 
-func (repo *itemRepository) assemblePath(n *node.Node) item.Path {
-	paths := item.Path{}
+func (repo *itemRepository) assemblePath(n node.Node) []item.PathItem {
+	paths := []item.PathItem{}
 	for _, v := range n.Path {
-		if i, ok := repo.items[v.PathID()]; ok {
+		if i, ok := repo.items[v.ID]; ok {
 			switch el := i.(type) {
-			case *item.Folder:
+			case item.Folder:
 				paths = append(paths, el)
-			case *item.Report:
+			case item.Report:
 				paths = append(paths, el)
 			}
 		}

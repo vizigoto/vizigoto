@@ -36,7 +36,7 @@ func TestPath(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	for k, v := range path {
-		if v != c.Path[k].PathID() {
+		if v != c.Path[k].ID {
 			t.Fatal("path error")
 		}
 	}
@@ -47,7 +47,7 @@ func TestPath(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	for k, v := range path {
-		if v != c.Path[k].PathID() {
+		if v != c.Path[k].ID {
 			t.Fatal("path error")
 		}
 	}
@@ -116,7 +116,7 @@ func TestMove(t *testing.T) {
 
 	pathToC := []string{rootID, aID, cID}
 	for k, v := range pathToC {
-		if v != c.Path[k].PathID() {
+		if v != c.Path[k].ID {
 			t.Fatal("path error")
 		}
 	}
@@ -127,7 +127,7 @@ func TestMove(t *testing.T) {
 	testutil.FatalOnError(t, err)
 
 	for k, v := range pathToC {
-		if v != c.Path[k].PathID() {
+		if v != c.Path[k].ID {
 			t.Fatal("path error")
 		}
 	}

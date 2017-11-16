@@ -24,7 +24,7 @@ func TestNewNode(t *testing.T) {
 	n, err = repo.Get(id)
 	testutil.FatalOnError(t, err)
 
-	if n.PathID() != id {
+	if n.ID != id {
 		t.Fatal("pathID error")
 	}
 }
