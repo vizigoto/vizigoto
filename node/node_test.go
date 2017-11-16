@@ -7,13 +7,24 @@ package node_test
 import (
 	"testing"
 
+	"github.com/vizigoto/vizigoto/mem"
 	"github.com/vizigoto/vizigoto/node"
+	"github.com/vizigoto/vizigoto/pkg/testutil"
 )
 
 func TestNewNode(t *testing.T) {
-	parent := "xyz"
+	repo := mem.NewNodeRepository()
+
+	parent := ""
 	n := node.New(parent)
-	if n.Parent != parent {
-		t.Fatal("folder error")
+
+	id, err := repo.Put(n)
+	testutil.FatalOnError(t, err)
+
+	n, err = repo.Get(id)
+	testutil.FatalOnError(t, err)
+
+	if n.PathID() != id {
+		t.Fatal("pathID error")
 	}
 }

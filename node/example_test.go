@@ -8,12 +8,12 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/vizigoto/vizigoto/mem"
 	"github.com/vizigoto/vizigoto/node"
-	"github.com/vizigoto/vizigoto/node/storage/mem"
 )
 
 func ExampleNew() {
-	repo := mem.NewRepository()
+	repo := mem.NewNodeRepository()
 
 	parent := ""
 	no := node.New(parent)

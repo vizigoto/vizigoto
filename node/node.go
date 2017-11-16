@@ -5,8 +5,10 @@
 // Package node provides a low level API to handle nodes in a content tree.
 package node
 
+// Path to the node.
 type Path []PathNode
 
+// PathNode is the single node in the path to the node.
 type PathNode interface {
 	PathID() string
 }
@@ -21,9 +23,10 @@ type Node struct {
 
 // New allocates a node and returns a pointer to it.
 func New(parent string) *Node {
-	return &Node{Parent: parent, Children: []string{}, Path: []PathNode{}}
+	return &Node{Parent: parent, Children: []string{}, Path: Path{}}
 }
 
+// PathID returns the id.
 func (n *Node) PathID() string {
 	return n.ID
 }

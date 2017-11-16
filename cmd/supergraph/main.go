@@ -6,13 +6,12 @@ import (
 
 	"github.com/vizigoto/vizigoto/api"
 	"github.com/vizigoto/vizigoto/item"
-	"github.com/vizigoto/vizigoto/item/storage/mem"
-	nodeRepo "github.com/vizigoto/vizigoto/node/storage/mem"
+	"github.com/vizigoto/vizigoto/mem"
 )
 
 func main() {
-	nodes := nodeRepo.NewRepository()
-	repo := mem.NewRepository(nodes)
+	nodes := mem.NewNodeRepository()
+	repo := mem.NewItemRepository(nodes)
 	service := item.NewService(repo)
 
 	rootName, rootParent := "Home", ""

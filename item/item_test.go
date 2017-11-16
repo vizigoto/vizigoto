@@ -8,8 +8,7 @@ import (
 	"testing"
 
 	"github.com/vizigoto/vizigoto/item"
-	"github.com/vizigoto/vizigoto/item/storage/mem"
-	node "github.com/vizigoto/vizigoto/node/storage/mem"
+	"github.com/vizigoto/vizigoto/mem"
 	"github.com/vizigoto/vizigoto/pkg/testutil"
 )
 
@@ -32,8 +31,8 @@ func TestNewReport(t *testing.T) {
 }
 
 func TestService(t *testing.T) {
-	nodes := node.NewRepository()
-	repo := mem.NewRepository(nodes)
+	nodes := mem.NewNodeRepository()
+	repo := mem.NewItemRepository(nodes)
 	service := item.NewService(repo)
 
 	rootName, rootParent := "Home", ""

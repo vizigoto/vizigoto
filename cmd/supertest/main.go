@@ -2,33 +2,15 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"time"
 
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/vizigoto/vizigoto/item"
-	"github.com/vizigoto/vizigoto/item/storage/mem"
-	nodeRepo "github.com/vizigoto/vizigoto/node/storage/mem"
+	"github.com/vizigoto/vizigoto/mem"
 )
 
 func main() {
-	nodeCounterRepo := prometheus.NewCounterVec(prometheus.CounterOpts{Namespace: "vizigoto", Subsystem: "node", Name: "repository", Help: "help"}, []string{"method"})
-	prometheus.MustRegister(nodeCounterRepo)
-
-	http.Handle("/metrics", promhttp.Handler())
-	go http.ListenAndServe(":8081", nil)
-
-	nodes := nodeRepo.NewRepository()
-
-	itemCounterRepo := prometheus.NewCounterVec(prometheus.CounterOpts{Namespace: "vizigoto", Subsystem: "item", Name: "repository", Help: "help"}, []string{"method"})
-	prometheus.MustRegister(itemCounterRepo)
-
-	repo := mem.NewRepository(nodes)
-
-	serviceCounterRepo := prometheus.NewCounterVec(prometheus.CounterOpts{Namespace: "vizigoto", Subsystem: "item", Name: "service", Help: "help"}, []string{"method"})
-	prometheus.MustRegister(serviceCounterRepo)
-
+	nodes := mem.NewNodeRepository()
+	repo := mem.NewItemRepository(nodes)
 	service := item.NewService(repo)
 
 	rootName, rootParent := "Home", ""
