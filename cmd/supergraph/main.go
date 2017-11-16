@@ -5,30 +5,37 @@ import (
 	"net/http"
 
 	"github.com/vizigoto/vizigoto/api"
+	"github.com/vizigoto/vizigoto/content"
 	"github.com/vizigoto/vizigoto/item"
 	"github.com/vizigoto/vizigoto/mem"
+	"github.com/vizigoto/vizigoto/user"
 )
 
 func main() {
 	nodes := mem.NewNodeRepository()
-	repo := mem.NewItemRepository(nodes)
-	service := item.NewService(repo)
+	nodeRepo := mem.NewItemRepository(nodes)
+	items := item.NewService(nodeRepo)
+
+	userRepo := mem.NewUserRepository()
+	users := user.NewService(userRepo)
+
+	content := content.NewService(items, users)
 
 	rootName, rootParent := "Home", ""
-	rootID, err := service.AddFolder(rootName, rootParent)
+	rootID, err := items.AddFolder(rootName, rootParent)
 	if err != nil {
 		panic(err)
 	}
 	log.Println(rootID)
 
 	reportName, reportContent := "report", "<h1>content"
-	reportID, err := service.AddReport(reportName, rootID, reportContent)
+	reportID, err := items.AddReport(reportName, rootID, reportContent)
 	if err != nil {
 		panic(err)
 	}
 	log.Println(reportID)
 
-	v1Handler, err := api.NewV1(service)
+	v1Handler, err := api.NewV1(content)
 	if err != nil {
 		panic(err)
 	}

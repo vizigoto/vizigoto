@@ -24,8 +24,8 @@ type service struct {
 	users user.Service
 }
 
-// NewContentService returns an instance of an content Service.
-func NewContentService(items item.Service, users user.Service) Service {
+// NewService returns an instance of an content Service.
+func NewService(items item.Service, users user.Service) Service {
 	return &service{items, users}
 }
 
