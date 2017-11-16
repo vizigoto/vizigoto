@@ -9,15 +9,15 @@ import (
 
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
-	"github.com/vizigoto/vizigoto/item"
+	"github.com/vizigoto/vizigoto/content"
 )
 
 type v1 struct {
-	service item.Service
+	content content.Service
 }
 
 // NewV1 returns a http.Handler which serves the v1 graphql api.
-func NewV1(service item.Service) (http.Handler, error) {
+func NewV1(service content.Service) (http.Handler, error) {
 	v1 := &v1{service}
 
 	folderType := getFolderType()

@@ -24,12 +24,12 @@ func (v1 *v1) getMutationType(folderType, reportType *graphql.Object, itemType *
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					name, parent := p.Args["name"].(string), p.Args["parent"].(string)
-					id, err := v1.service.AddFolder(name, parent)
+					id, err := v1.content.AddFolder(name, parent)
 					if err != nil {
 						return nil, err
 					}
 
-					f, err := v1.service.Get(id)
+					f, err := v1.content.GetItem(id)
 					if err != nil {
 						return nil, err
 					}
