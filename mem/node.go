@@ -12,7 +12,7 @@ import (
 	"github.com/vizigoto/vizigoto/pkg/uuid"
 )
 
-type repository struct {
+type nodeRepository struct {
 	sync.RWMutex
 	nodes map[string]*node.Node
 }
@@ -20,10 +20,10 @@ type repository struct {
 // NewNodeRepository returns an instance of a node repository using an in-memory storage engine.
 // All data will be lost after instance release. Useful for testing purposes.
 func NewNodeRepository() node.Repository {
-	return &repository{nodes: make(map[string]*node.Node)}
+	return &nodeRepository{nodes: make(map[string]*node.Node)}
 }
 
-func (repo *repository) Get(id string) (*node.Node, error) {
+func (repo *nodeRepository) Get(id string) (*node.Node, error) {
 	repo.RLock()
 	defer repo.RUnlock()
 	if i, ok := repo.nodes[id]; ok {
@@ -34,7 +34,7 @@ func (repo *repository) Get(id string) (*node.Node, error) {
 	return nil, errors.New("node not found")
 }
 
-func (repo *repository) Put(n *node.Node) (string, error) {
+func (repo *nodeRepository) Put(n *node.Node) (string, error) {
 	repo.Lock()
 	defer repo.Unlock()
 	n.ID = uuid.New()
@@ -42,7 +42,7 @@ func (repo *repository) Put(n *node.Node) (string, error) {
 	return n.ID, nil
 }
 
-func (repo *repository) Move(n *node.Node, parent string) error {
+func (repo *nodeRepository) Move(n *node.Node, parent string) error {
 	repo.Lock()
 	defer repo.Unlock()
 	n.Parent = parent
@@ -50,7 +50,7 @@ func (repo *repository) Move(n *node.Node, parent string) error {
 	return nil
 }
 
-func (repo *repository) assembleChildren(n *node.Node) {
+func (repo *nodeRepository) assembleChildren(n *node.Node) {
 	n.Children = []string{}
 	for _, v := range repo.nodes {
 		if v.Parent == n.ID {
@@ -59,7 +59,7 @@ func (repo *repository) assembleChildren(n *node.Node) {
 	}
 }
 
-func (repo *repository) path(id string) node.Path {
+func (repo *nodeRepository) path(id string) node.Path {
 	n := repo.nodes[id]
 	if n.Parent == "" {
 		return []node.PathNode{n}
