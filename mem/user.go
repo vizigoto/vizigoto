@@ -5,8 +5,9 @@
 package mem
 
 import (
-	"errors"
 	"sync"
+
+	"github.com/pkg/errors"
 
 	"github.com/vizigoto/vizigoto/pkg/uuid"
 	"github.com/vizigoto/vizigoto/user"

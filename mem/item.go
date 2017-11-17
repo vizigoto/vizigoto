@@ -6,8 +6,9 @@ package mem
 
 import (
 	"context"
-	"errors"
 	"sync"
+
+	"github.com/pkg/errors"
 
 	"github.com/vizigoto/vizigoto/item"
 	"github.com/vizigoto/vizigoto/node"
@@ -30,7 +31,7 @@ func (repo *itemRepository) Get(ctx context.Context, id string) (interface{}, er
 
 	n, err := repo.nodes.Get(ctx, id)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "could not find the node")
 	}
 
 	path := repo.assemblePath(n)
@@ -60,7 +61,7 @@ func (repo *itemRepository) Put(ctx context.Context, i interface{}) (string, err
 		n := node.New(folder.Parent)
 		id, err := repo.nodes.Put(ctx, n)
 		if err != nil {
-			return "", err
+			return "", errors.Wrap(err, "could not put the node")
 		}
 		folder.ID = id
 		repo.items[id] = folder
@@ -72,7 +73,7 @@ func (repo *itemRepository) Put(ctx context.Context, i interface{}) (string, err
 		n := node.New(report.Parent)
 		id, err := repo.nodes.Put(ctx, n)
 		if err != nil {
-			return "", err
+			return "", errors.Wrap(err, "could not put the node")
 		}
 		report.ID = id
 		repo.items[id] = report

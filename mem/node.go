@@ -6,8 +6,9 @@ package mem
 
 import (
 	"context"
-	"errors"
 	"sync"
+
+	"github.com/pkg/errors"
 
 	"github.com/vizigoto/vizigoto/node"
 	"github.com/vizigoto/vizigoto/pkg/uuid"
