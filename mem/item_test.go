@@ -42,7 +42,7 @@ func TestItemPath(t *testing.T) {
 	testutil.FatalOnError(t, err)
 	cf := cg.(item.Folder)
 
-	for k, _ := range pathIDs {
+	for k := range pathIDs {
 		if pathIDs[k] != cf.Path[k].PathID() {
 			t.Fatal("path id error")
 		}
@@ -58,7 +58,7 @@ func TestItemPath(t *testing.T) {
 	testutil.FatalOnError(t, err)
 	cf = cg.(item.Folder)
 
-	for k, _ := range pathIDs {
+	for k := range pathIDs {
 		if pathIDs[k] != cf.Path[k].PathID() {
 			t.Fatal("path id error")
 		}
