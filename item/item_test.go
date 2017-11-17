@@ -105,7 +105,7 @@ func TestPathInterface(t *testing.T) {
 
 	pathToReport := []item.Path{root, a, b, c}
 
-	for k, _ := range pathToReport {
+	for k := range pathToReport {
 		if pathToReport[k].PathID() != c.Path[k].PathID() {
 			t.Fatal("path error")
 		}

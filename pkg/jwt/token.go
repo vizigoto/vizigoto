@@ -48,7 +48,10 @@ func (jwt *JWT) SignedString(t Token) (string, error) {
 
 func (jwt *JWT) sign(signingString string) (string, error) {
 	hasher := hmac.New(sha256.New, jwt.Key)
-	hasher.Write([]byte(signingString))
+	_, err := hasher.Write([]byte(signingString))
+	if err != nil {
+		return "", err
+	}
 	return encodeSegment(hasher.Sum(nil)), nil
 }
 

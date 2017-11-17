@@ -33,20 +33,35 @@ func item(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	if id == "" {
-		templates.ExecuteTemplate(w, "index.html", homeData)
+		err := templates.ExecuteTemplate(w, "index.html", homeData)
+		if err != nil {
+			http.Error(w, "could not execute template", http.StatusInternalServerError)
+		}
 		return
 	}
 	if item, ok := itemsData[id]; ok {
-		templates.ExecuteTemplate(w, "index.html", item)
+		err := templates.ExecuteTemplate(w, "index.html", item)
+		if err != nil {
+			http.Error(w, "could not execute template", http.StatusInternalServerError)
+		}
 		return
 	}
-	templates.ExecuteTemplate(w, "404.html", nil)
+	err := templates.ExecuteTemplate(w, "404.html", nil)
+	if err != nil {
+		http.Error(w, "could not execute template", http.StatusInternalServerError)
+	}
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "index.html", nil)
+	err := templates.ExecuteTemplate(w, "index.html", nil)
+	if err != nil {
+		http.Error(w, "could not execute template", http.StatusInternalServerError)
+	}
 }
 
 func search(w http.ResponseWriter, r *http.Request) {
-	templates.ExecuteTemplate(w, "index.html", nil)
+	err := templates.ExecuteTemplate(w, "index.html", nil)
+	if err != nil {
+		http.Error(w, "could not execute template", http.StatusInternalServerError)
+	}
 }

@@ -63,7 +63,10 @@ func (jwt *JWT) verify(signingString, signature string) error {
 		return err
 	}
 	hasher := hmac.New(sha256.New, jwt.Key)
-	hasher.Write([]byte(signingString))
+	_, err = hasher.Write([]byte(signingString))
+	if err != nil {
+		return err
+	}
 	if !hmac.Equal(sig, hasher.Sum(nil)) {
 		return ErrInvalidSignature
 	}

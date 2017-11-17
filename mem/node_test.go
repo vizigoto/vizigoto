@@ -126,7 +126,9 @@ func TestMove(t *testing.T) {
 		}
 	}
 
-	repo.Move(ctx, c, bID)
+	err = repo.Move(ctx, c, bID)
+	testutil.FatalOnError(t, err)
+
 	pathToC = []string{rootID, bID, cID}
 	c, err = repo.Get(ctx, cID)
 	testutil.FatalOnError(t, err)
