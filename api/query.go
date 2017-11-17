@@ -35,7 +35,7 @@ func (v1 *v1) getQueryType(folderType, reportType, userType *graphql.Object, ite
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					id := p.Args["id"].(string)
-					i, err := v1.content.GetItem(id)
+					i, err := v1.content.GetItem(p.Context, id)
 					if err != nil {
 						return nil, err
 					}
@@ -56,7 +56,7 @@ func (v1 *v1) getQueryType(folderType, reportType, userType *graphql.Object, ite
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					id := p.Args["id"].(string)
-					i, err := v1.content.GetItem(id)
+					i, err := v1.content.GetItem(p.Context, id)
 					if err != nil {
 						return nil, err
 					}
@@ -77,7 +77,7 @@ func (v1 *v1) getQueryType(folderType, reportType, userType *graphql.Object, ite
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					id := p.Args["id"].(string)
-					i, err := v1.content.GetItem(id)
+					i, err := v1.content.GetItem(p.Context, id)
 					if err != nil {
 						return nil, err
 					}
@@ -95,7 +95,7 @@ func (v1 *v1) getQueryType(folderType, reportType, userType *graphql.Object, ite
 			"home": &graphql.Field{
 				Type: folderType,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					h, err := v1.content.GetHome()
+					h, err := v1.content.GetHome(p.Context)
 					if err != nil {
 						return nil, err
 					}

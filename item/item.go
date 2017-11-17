@@ -7,6 +7,8 @@
 // The location of an item in the content tree is stored using the node package.
 package item
 
+import "context"
+
 // Path is an item in the path to the node.
 type Path interface {
 	PathID() string
@@ -63,15 +65,15 @@ func (r Report) PathName() string {
 
 // Repository provides a limited interface to a storage layer.
 type Repository interface {
-	Get(string) (interface{}, error)
-	Put(interface{}) (string, error)
+	Get(ctx context.Context, id string) (i interface{}, err error)
+	Put(ctx context.Context, i interface{}) (id string, err error)
 }
 
 //Service is the interface that provides the basic Item methods.
 type Service interface {
-	Get(id string) (interface{}, error)
-	AddFolder(name, parent string) (string, error)
-	AddReport(name, parent, content string) (string, error)
+	Get(ctx context.Context, id string) (interface{}, error)
+	AddFolder(ctx context.Context, name, parent string) (string, error)
+	AddReport(ctx context.Context, name, parent, content string) (string, error)
 }
 
 type service struct {
@@ -83,16 +85,16 @@ func NewService(repo Repository) Service {
 	return &service{repo}
 }
 
-func (s *service) Get(id string) (interface{}, error) {
-	return s.repo.Get(id)
+func (s *service) Get(ctx context.Context, id string) (interface{}, error) {
+	return s.repo.Get(ctx, id)
 }
 
-func (s *service) AddFolder(name, parent string) (string, error) {
+func (s *service) AddFolder(ctx context.Context, name, parent string) (string, error) {
 	folder := NewFolder(name, parent)
-	return s.repo.Put(folder)
+	return s.repo.Put(ctx, folder)
 }
 
-func (s *service) AddReport(name, parent, content string) (string, error) {
+func (s *service) AddReport(ctx context.Context, name, parent, content string) (string, error) {
 	report := NewReport(name, parent, content)
-	return s.repo.Put(report)
+	return s.repo.Put(ctx, report)
 }

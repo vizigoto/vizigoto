@@ -5,6 +5,7 @@
 package mem_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/vizigoto/vizigoto/mem"
@@ -13,26 +14,27 @@ import (
 )
 
 func TestPath(t *testing.T) {
+	ctx := context.Background()
 	repo := mem.NewNodeRepository()
 	root := node.New("")
-	rootID, err := repo.Put(root)
+	rootID, err := repo.Put(ctx, root)
 	testutil.FatalOnError(t, err)
 
 	a := node.New(rootID)
-	aID, err := repo.Put(a)
+	aID, err := repo.Put(ctx, a)
 	testutil.FatalOnError(t, err)
 
 	b := node.New(aID)
-	bID, err := repo.Put(b)
+	bID, err := repo.Put(ctx, b)
 	testutil.FatalOnError(t, err)
 
 	c := node.New(bID)
-	cID, err := repo.Put(c)
+	cID, err := repo.Put(ctx, c)
 	testutil.FatalOnError(t, err)
 
 	path := []string{rootID, aID, bID, cID}
 
-	c, err = repo.Get(cID)
+	c, err = repo.Get(ctx, cID)
 	testutil.FatalOnError(t, err)
 
 	for k, v := range path {
@@ -43,7 +45,7 @@ func TestPath(t *testing.T) {
 
 	path = []string{rootID, aID, bID}
 
-	c, err = repo.Get(bID)
+	c, err = repo.Get(ctx, bID)
 	testutil.FatalOnError(t, err)
 
 	for k, v := range path {
@@ -54,30 +56,32 @@ func TestPath(t *testing.T) {
 }
 
 func TestNodeNotFound(t *testing.T) {
+	ctx := context.Background()
 	repo := mem.NewNodeRepository()
-	_, err := repo.Get("abc")
+	_, err := repo.Get(ctx, "abc")
 	if err == nil {
 		t.Fatal("error expected")
 	}
 }
 
 func TestPutGet(t *testing.T) {
+	ctx := context.Background()
 	repo := mem.NewNodeRepository()
 
 	root := node.New("")
-	rootID, err := repo.Put(root)
+	rootID, err := repo.Put(ctx, root)
 	testutil.FatalOnError(t, err)
 
 	children := []string{"a", "b", "c", "d"}
 	childrenIDs := []string{}
 	for range children {
-		id, err := repo.Put(node.New(rootID))
+		id, err := repo.Put(ctx, node.New(rootID))
 		testutil.FatalOnError(t, err)
 
 		childrenIDs = append(childrenIDs, id)
 	}
 
-	i, err := repo.Get(rootID)
+	i, err := repo.Get(ctx, rootID)
 	testutil.FatalOnError(t, err)
 
 	for _, j := range i.Children {
@@ -94,24 +98,25 @@ func TestPutGet(t *testing.T) {
 }
 
 func TestMove(t *testing.T) {
+	ctx := context.Background()
 	repo := mem.NewNodeRepository()
 
 	root := node.New("")
-	rootID, err := repo.Put(root)
+	rootID, err := repo.Put(ctx, root)
 	testutil.FatalOnError(t, err)
 
 	a := node.New(rootID)
-	aID, err := repo.Put(a)
+	aID, err := repo.Put(ctx, a)
 	testutil.FatalOnError(t, err)
 
 	b := node.New(rootID)
-	bID, err := repo.Put(b)
+	bID, err := repo.Put(ctx, b)
 	testutil.FatalOnError(t, err)
 
 	c := node.New(aID)
-	cID, err := repo.Put(c)
+	cID, err := repo.Put(ctx, c)
 	testutil.FatalOnError(t, err)
-	c, err = repo.Get(cID)
+	c, err = repo.Get(ctx, cID)
 	testutil.FatalOnError(t, err)
 
 	pathToC := []string{rootID, aID, cID}
@@ -121,9 +126,9 @@ func TestMove(t *testing.T) {
 		}
 	}
 
-	repo.Move(c, bID)
+	repo.Move(ctx, c, bID)
 	pathToC = []string{rootID, bID, cID}
-	c, err = repo.Get(cID)
+	c, err = repo.Get(ctx, cID)
 	testutil.FatalOnError(t, err)
 
 	for k, v := range pathToC {

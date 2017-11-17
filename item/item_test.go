@@ -5,6 +5,7 @@
 package item_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/vizigoto/vizigoto/item"
@@ -31,22 +32,23 @@ func TestNewReport(t *testing.T) {
 }
 
 func TestService(t *testing.T) {
+	ctx := context.Background()
 	nodes := mem.NewNodeRepository()
 	repo := mem.NewItemRepository(nodes)
 	service := item.NewService(repo)
 
 	rootName, rootParent := "Home", ""
-	rootID, err := service.AddFolder(rootName, rootParent)
+	rootID, err := service.AddFolder(ctx, rootName, rootParent)
 	testutil.FatalOnError(t, err)
 
 	reportName, reportContent := "report", "<h1>content"
-	reportID, err := service.AddReport(reportName, rootID, reportContent)
+	reportID, err := service.AddReport(ctx, reportName, rootID, reportContent)
 	testutil.FatalOnError(t, err)
 
-	f, err := service.Get(rootID)
+	f, err := service.Get(ctx, rootID)
 	testutil.FatalOnError(t, err)
 
-	r, err := service.Get(reportID)
+	r, err := service.Get(ctx, reportID)
 	testutil.FatalOnError(t, err)
 
 	folder, ok := f.(item.Folder)
@@ -68,35 +70,36 @@ func TestService(t *testing.T) {
 }
 
 func TestPathInterface(t *testing.T) {
+	ctx := context.Background()
 	nodes := mem.NewNodeRepository()
 	repo := mem.NewItemRepository(nodes)
 	service := item.NewService(repo)
 
 	rootName, rootParent := "Home", ""
-	rootID, err := service.AddFolder(rootName, rootParent)
+	rootID, err := service.AddFolder(ctx, rootName, rootParent)
 	testutil.FatalOnError(t, err)
-	rootItem, err := service.Get(rootID)
+	rootItem, err := service.Get(ctx, rootID)
 	testutil.FatalOnError(t, err)
 	root := rootItem.(item.Folder)
 
 	aName, aParent := "a", rootID
-	aID, err := service.AddFolder(aName, aParent)
+	aID, err := service.AddFolder(ctx, aName, aParent)
 	testutil.FatalOnError(t, err)
-	aItem, err := service.Get(aID)
+	aItem, err := service.Get(ctx, aID)
 	testutil.FatalOnError(t, err)
 	a := aItem.(item.Folder)
 
 	bName, bParent := "b", aID
-	bID, err := service.AddFolder(bName, bParent)
+	bID, err := service.AddFolder(ctx, bName, bParent)
 	testutil.FatalOnError(t, err)
-	bItem, err := service.Get(bID)
+	bItem, err := service.Get(ctx, bID)
 	testutil.FatalOnError(t, err)
 	b := bItem.(item.Folder)
 
 	cName, cParent, cContent := "c", bID, "content"
-	cID, err := service.AddReport(cName, cParent, cContent)
+	cID, err := service.AddReport(ctx, cName, cParent, cContent)
 	testutil.FatalOnError(t, err)
-	cItem, err := service.Get(cID)
+	cItem, err := service.Get(ctx, cID)
 	testutil.FatalOnError(t, err)
 	c := cItem.(item.Report)
 

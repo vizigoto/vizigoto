@@ -5,6 +5,7 @@
 package mem
 
 import (
+	"context"
 	"errors"
 	"sync"
 
@@ -23,7 +24,7 @@ func NewNodeRepository() node.Repository {
 	return &nodeRepository{nodes: make(map[string]node.Node)}
 }
 
-func (repo *nodeRepository) Get(id string) (node.Node, error) {
+func (repo *nodeRepository) Get(ctx context.Context, id string) (node.Node, error) {
 	repo.RLock()
 	defer repo.RUnlock()
 	if i, ok := repo.nodes[id]; ok {
@@ -34,7 +35,7 @@ func (repo *nodeRepository) Get(id string) (node.Node, error) {
 	return node.Node{}, errors.New("node not found")
 }
 
-func (repo *nodeRepository) Put(n node.Node) (string, error) {
+func (repo *nodeRepository) Put(ctx context.Context, n node.Node) (string, error) {
 	repo.Lock()
 	defer repo.Unlock()
 	n.ID = uuid.New()
@@ -42,7 +43,7 @@ func (repo *nodeRepository) Put(n node.Node) (string, error) {
 	return n.ID, nil
 }
 
-func (repo *nodeRepository) Move(n node.Node, parent string) error {
+func (repo *nodeRepository) Move(ctx context.Context, n node.Node, parent string) error {
 	repo.Lock()
 	defer repo.Unlock()
 	n.Parent = parent

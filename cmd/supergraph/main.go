@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 
@@ -12,6 +13,7 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
 	nodes := mem.NewNodeRepository()
 	nodeRepo := mem.NewItemRepository(nodes)
 	items := item.NewService(nodeRepo)
@@ -20,14 +22,14 @@ func main() {
 	users := user.NewService(userRepo)
 
 	rootName, rootParent := "Home", ""
-	rootID, err := items.AddFolder(rootName, rootParent)
+	rootID, err := items.AddFolder(ctx, rootName, rootParent)
 	if err != nil {
 		panic(err)
 	}
 	log.Println(rootID)
 
 	reportName, reportContent := "report", "<h1>content"
-	reportID, err := items.AddReport(reportName, rootID, reportContent)
+	reportID, err := items.AddReport(ctx, reportName, rootID, reportContent)
 	if err != nil {
 		panic(err)
 	}

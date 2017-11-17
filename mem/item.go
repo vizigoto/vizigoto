@@ -5,6 +5,7 @@
 package mem
 
 import (
+	"context"
 	"errors"
 	"sync"
 
@@ -23,11 +24,11 @@ func NewItemRepository(nodes node.Repository) item.Repository {
 	return &itemRepository{items: make(map[string]interface{}), nodes: nodes}
 }
 
-func (repo *itemRepository) Get(id string) (interface{}, error) {
+func (repo *itemRepository) Get(ctx context.Context, id string) (interface{}, error) {
 	repo.RLock()
 	defer repo.RUnlock()
 
-	n, err := repo.nodes.Get(id)
+	n, err := repo.nodes.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -50,14 +51,14 @@ func (repo *itemRepository) Get(id string) (interface{}, error) {
 	return nil, errors.New("item not found")
 }
 
-func (repo *itemRepository) Put(i interface{}) (string, error) {
+func (repo *itemRepository) Put(ctx context.Context, i interface{}) (string, error) {
 	repo.Lock()
 	defer repo.Unlock()
 
 	folder, ok := i.(item.Folder)
 	if ok {
 		n := node.New(folder.Parent)
-		id, err := repo.nodes.Put(n)
+		id, err := repo.nodes.Put(ctx, n)
 		if err != nil {
 			return "", err
 		}
@@ -69,7 +70,7 @@ func (repo *itemRepository) Put(i interface{}) (string, error) {
 	report, ok := i.(item.Report)
 	if ok {
 		n := node.New(report.Parent)
-		id, err := repo.nodes.Put(n)
+		id, err := repo.nodes.Put(ctx, n)
 		if err != nil {
 			return "", err
 		}

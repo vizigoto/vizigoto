@@ -5,19 +5,21 @@
 package content
 
 import (
+	"context"
+
 	"github.com/vizigoto/vizigoto/item"
 	"github.com/vizigoto/vizigoto/user"
 )
 
 //Service is the interface that provides the content methods.
 type Service interface {
-	GetHome() (item.Folder, error)
-	GetItem(id string) (interface{}, error)
-	AddFolder(name, parent string) (string, error)
-	AddReport(name, parent, content string) (string, error)
+	GetHome(ctx context.Context) (i item.Folder, err error)
+	GetItem(ctx context.Context, id string) (i interface{}, err error)
+	AddFolder(ctx context.Context, name, parent string) (id string, err error)
+	AddReport(ctx context.Context, name, parent, content string) (id string, err error)
 
-	GetUser(id string) (user.User, error)
-	AddUser(name string) (id string, err error)
+	GetUser(ctx context.Context, id string) (u user.User, err error)
+	AddUser(ctx context.Context, name string) (id string, err error)
 }
 
 type service struct {
@@ -31,8 +33,8 @@ func NewService(homeID string, items item.Service, users user.Service) Service {
 	return &service{homeID, items, users}
 }
 
-func (s *service) GetHome() (item.Folder, error) {
-	i, err := s.items.Get(s.homeID)
+func (s *service) GetHome(ctx context.Context) (item.Folder, error) {
+	i, err := s.items.Get(ctx, s.homeID)
 	if err != nil {
 		return item.Folder{}, nil
 	}
@@ -42,22 +44,22 @@ func (s *service) GetHome() (item.Folder, error) {
 	panic("home is not a folder")
 }
 
-func (s *service) GetItem(id string) (interface{}, error) {
-	return s.items.Get(id)
+func (s *service) GetItem(ctx context.Context, id string) (interface{}, error) {
+	return s.items.Get(ctx, id)
 }
 
-func (s *service) AddFolder(name, parent string) (string, error) {
-	return s.items.AddFolder(name, parent)
+func (s *service) AddFolder(ctx context.Context, name, parent string) (string, error) {
+	return s.items.AddFolder(ctx, name, parent)
 }
 
-func (s *service) AddReport(name, parent, content string) (string, error) {
-	return s.items.AddReport(name, parent, content)
+func (s *service) AddReport(ctx context.Context, name, parent, content string) (string, error) {
+	return s.items.AddReport(ctx, name, parent, content)
 }
 
-func (s *service) GetUser(id string) (user.User, error) {
+func (s *service) GetUser(ctx context.Context, id string) (user.User, error) {
 	return s.users.Get(id)
 }
 
-func (s *service) AddUser(name string) (string, error) {
+func (s *service) AddUser(ctx context.Context, name string) (string, error) {
 	return s.users.AddUser(name)
 }

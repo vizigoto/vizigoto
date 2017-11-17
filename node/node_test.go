@@ -5,6 +5,7 @@
 package node_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/vizigoto/vizigoto/mem"
@@ -13,15 +14,16 @@ import (
 )
 
 func TestNewNode(t *testing.T) {
+	ctx := context.Background()
 	repo := mem.NewNodeRepository()
 
 	parent := ""
 	n := node.New(parent)
 
-	id, err := repo.Put(n)
+	id, err := repo.Put(ctx, n)
 	testutil.FatalOnError(t, err)
 
-	n, err = repo.Get(id)
+	n, err = repo.Get(ctx, id)
 	testutil.FatalOnError(t, err)
 
 	if n.ID != id {

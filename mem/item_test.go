@@ -5,6 +5,7 @@
 package mem_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/vizigoto/vizigoto/item"
@@ -13,30 +14,31 @@ import (
 )
 
 func TestItemPath(t *testing.T) {
+	ctx := context.Background()
 	nodes := mem.NewNodeRepository()
 	repo := mem.NewItemRepository(nodes)
 
 	name, parent := "Home", ""
 	root := item.NewFolder(name, parent)
-	rootID, err := repo.Put(root)
+	rootID, err := repo.Put(ctx, root)
 	testutil.FatalOnError(t, err)
 
 	a := item.NewFolder("a", rootID)
-	aID, err := repo.Put(a)
+	aID, err := repo.Put(ctx, a)
 	testutil.FatalOnError(t, err)
 
 	b := item.NewFolder("b", aID)
-	bID, err := repo.Put(b)
+	bID, err := repo.Put(ctx, b)
 	testutil.FatalOnError(t, err)
 
 	c := item.NewFolder("c", bID)
-	cID, err := repo.Put(c)
+	cID, err := repo.Put(ctx, c)
 	testutil.FatalOnError(t, err)
 
 	pathIDs := []string{rootID, aID, bID, cID}
 	pathNames := []string{root.Name, a.Name, b.Name, c.Name}
 
-	cg, err := repo.Get(cID)
+	cg, err := repo.Get(ctx, cID)
 	testutil.FatalOnError(t, err)
 	cf := cg.(item.Folder)
 
@@ -52,7 +54,7 @@ func TestItemPath(t *testing.T) {
 	pathIDs = []string{rootID, aID, bID}
 	pathNames = []string{root.Name, a.Name, b.Name}
 
-	cg, err = repo.Get(cID)
+	cg, err = repo.Get(ctx, cID)
 	testutil.FatalOnError(t, err)
 	cf = cg.(item.Folder)
 
@@ -67,15 +69,16 @@ func TestItemPath(t *testing.T) {
 }
 
 func TestPutGetFolder(t *testing.T) {
+	ctx := context.Background()
 	nodes := mem.NewNodeRepository()
 	repo := mem.NewItemRepository(nodes)
 
 	name, parent := "Home", ""
 	root := item.NewFolder(name, parent)
-	rootID, err := repo.Put(root)
+	rootID, err := repo.Put(ctx, root)
 	testutil.FatalOnError(t, err)
 
-	f, err := repo.Get(rootID)
+	f, err := repo.Get(ctx, rootID)
 	testutil.FatalOnError(t, err)
 
 	folder, ok := f.(item.Folder)
@@ -88,15 +91,16 @@ func TestPutGetFolder(t *testing.T) {
 }
 
 func TestPutGetReport(t *testing.T) {
+	ctx := context.Background()
 	nodes := mem.NewNodeRepository()
 	repo := mem.NewItemRepository(nodes)
 
 	name, parent, content := "Report", "", "<h1>report"
 	r := item.NewReport(name, parent, content)
-	id, err := repo.Put(r)
+	id, err := repo.Put(ctx, r)
 	testutil.FatalOnError(t, err)
 
-	f, err := repo.Get(id)
+	f, err := repo.Get(ctx, id)
 	testutil.FatalOnError(t, err)
 
 	report, ok := f.(item.Report)
@@ -110,22 +114,23 @@ func TestPutGetReport(t *testing.T) {
 }
 
 func TestChildren(t *testing.T) {
+	ctx := context.Background()
 	nodes := mem.NewNodeRepository()
 	repo := mem.NewItemRepository(nodes)
 
 	root := item.NewFolder("Home", "")
-	rootID, err := repo.Put(root)
+	rootID, err := repo.Put(ctx, root)
 	testutil.FatalOnError(t, err)
 
 	a := item.NewFolder("IT", rootID)
-	aID, err := repo.Put(a)
+	aID, err := repo.Put(ctx, a)
 	testutil.FatalOnError(t, err)
 
 	b := item.NewReport("Report", rootID, "<h1>report")
-	bID, err := repo.Put(b)
+	bID, err := repo.Put(ctx, b)
 	testutil.FatalOnError(t, err)
 
-	f, err := repo.Get(rootID)
+	f, err := repo.Get(ctx, rootID)
 	testutil.FatalOnError(t, err)
 
 	folder, ok := f.(item.Folder)

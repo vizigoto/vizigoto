@@ -5,6 +5,8 @@
 // Package node provides a low level API to handle nodes in a content tree.
 package node
 
+import "context"
+
 // Node represents one single node in the content tree.
 type Node struct {
 	ID       string
@@ -20,7 +22,7 @@ func New(parent string) Node {
 
 // Repository provides a limited interface to a storage layer.
 type Repository interface {
-	Get(id string) (n Node, err error)      // Get a node from content tree
-	Put(n Node) (id string, err error)      // Put a node in the content tree
-	Move(n Node, parent string) (err error) // Move a node to another parent node in the content tree
+	Get(ctx context.Context, id string) (n Node, err error)      // Get a node from content tree
+	Put(ctx context.Context, n Node) (id string, err error)      // Put a node in the content tree
+	Move(ctx context.Context, n Node, parent string) (err error) // Move a node to another parent node in the content tree
 }
