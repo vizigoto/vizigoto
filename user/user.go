@@ -4,6 +4,8 @@
 
 package user
 
+import "context"
+
 // User represents one single user.
 type User struct {
 	ID   string
@@ -17,14 +19,14 @@ func New(name string) User {
 
 // Repository provides a limited interface to a user storage layer.
 type Repository interface {
-	Get(id string) (user User, err error)
-	Put(user User) (id string, err error)
+	Get(ctx context.Context, id string) (u User, err error)
+	Put(ctx context.Context, user User) (id string, err error)
 }
 
 //Service is the interface that provides the basic User methods.
 type Service interface {
-	Get(id string) (user User, err error)
-	AddUser(name string) (id string, err error)
+	Get(ctx context.Context, id string) (u User, err error)
+	AddUser(ctx context.Context, name string) (id string, err error)
 }
 
 type service struct {
@@ -36,11 +38,11 @@ func NewService(repo Repository) Service {
 	return &service{repo}
 }
 
-func (s *service) Get(id string) (User, error) {
-	return s.repo.Get(id)
+func (s *service) Get(ctx context.Context, id string) (User, error) {
+	return s.repo.Get(ctx, id)
 }
 
-func (s *service) AddUser(name string) (string, error) {
+func (s *service) AddUser(ctx context.Context, name string) (string, error) {
 	u := New(name)
-	return s.repo.Put(u)
+	return s.repo.Put(ctx, u)
 }

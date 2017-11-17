@@ -5,6 +5,7 @@
 package mem_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/vizigoto/vizigoto/mem"
@@ -13,24 +14,27 @@ import (
 )
 
 func TestUserNotFound(t *testing.T) {
+	ctx := context.Background()
 	repo := mem.NewUserRepository()
 
-	_, err := repo.Get("abc")
+	_, err := repo.Get(ctx, "abc")
 	if err == nil {
 		t.Fatal("error expected")
 	}
 }
 
 func TestSimplePutGetUser(t *testing.T) {
+	ctx := context.Background()
+
 	name := "Maria"
 	userMaria := user.New(name)
 
 	repo := mem.NewUserRepository()
 
-	userID, err := repo.Put(userMaria)
+	userID, err := repo.Put(ctx, userMaria)
 	testutil.FatalOnError(t, err)
 
-	u, err := repo.Get(userID)
+	u, err := repo.Get(ctx, userID)
 	testutil.FatalOnError(t, err)
 
 	if u.Name != userMaria.Name {

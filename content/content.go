@@ -57,9 +57,9 @@ func (s *service) AddReport(ctx context.Context, name, parent, content string) (
 }
 
 func (s *service) GetUser(ctx context.Context, id string) (user.User, error) {
-	return s.users.Get(id)
+	return s.users.Get(ctx, id)
 }
 
 func (s *service) AddUser(ctx context.Context, name string) (string, error) {
-	return s.users.AddUser(name)
+	return s.users.AddUser(ctx, name)
 }

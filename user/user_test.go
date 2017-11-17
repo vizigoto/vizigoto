@@ -5,6 +5,7 @@
 package user_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/vizigoto/vizigoto/mem"
@@ -22,14 +23,15 @@ func TestNew(t *testing.T) {
 }
 
 func TestService(t *testing.T) {
+	ctx := context.Background()
 	name := "Maria"
 
 	repo := mem.NewUserRepository()
 	service := user.NewService(repo)
-	id, err := service.AddUser(name)
+	id, err := service.AddUser(ctx, name)
 	testutil.FatalOnError(t, err)
 
-	u, err := service.Get(id)
+	u, err := service.Get(ctx, id)
 	testutil.FatalOnError(t, err)
 
 	if u.Name != name {

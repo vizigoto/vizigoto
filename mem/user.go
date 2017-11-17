@@ -5,6 +5,7 @@
 package mem
 
 import (
+	"context"
 	"sync"
 
 	"github.com/pkg/errors"
@@ -24,7 +25,7 @@ func NewUserRepository() user.Repository {
 	return &repository{users: make(map[string]user.User)}
 }
 
-func (repo *repository) Get(id string) (user.User, error) {
+func (repo *repository) Get(ctx context.Context, id string) (user.User, error) {
 	repo.RLock()
 	defer repo.RUnlock()
 	if u, ok := repo.users[id]; ok {
@@ -33,7 +34,7 @@ func (repo *repository) Get(id string) (user.User, error) {
 	return user.User{}, errors.New("user not found")
 }
 
-func (repo *repository) Put(u user.User) (string, error) {
+func (repo *repository) Put(ctx context.Context, u user.User) (string, error) {
 	repo.Lock()
 	defer repo.Unlock()
 	u.ID = uuid.New()
